@@ -1,7 +1,7 @@
 import Header from "../components/Header"
 import NavBar from "../components/NavBar"
 import styled from "styled-components"
-import NewEventContainer from "../components/EventContainer/NewEventContainer"
+import NewEventContainer from "../components/NewEventContainer/NewEventContainer"
 
 const Container = styled.div`
 display : flex;

@@ -1,8 +1,24 @@
 import React from "react"
+import Header from "../components/Header"
+import styled from "styled-components"
+import NavBar from "../components/NavBar";
+import EventContainer from "../components/EventContainer/EventContainer";
 
+const Container = styled.div`   
+display : flex;
+justify-content : center;
+background-color: #98C1D9;
+`;
 function EventPage() {
     return (
-        <div>hello this is the EventPage</div>
+        <>
+            <Header/>
+            <Container>
+                <EventContainer/>
+                <NavBar/>
+            </Container>
+        </>
+        
     )
 }
 
