@@ -6,7 +6,7 @@ const GridRow = styled.div`
 `
 const GridCell = styled.div`
     width: 30px;
-    background-color:red;
+    background-color: #FFFFFF;
     border-style: solid;
     border-color: black
 `
@@ -15,6 +15,7 @@ type Props = {
     numRows : number;
     numCols : number;
 }
+
 const GridContainer = ({numRows, numCols}: Props ) => {
     const gridRows = Array.from({ length : numRows }, (_, rowIndex) => (
         <GridRow key={rowIndex}>

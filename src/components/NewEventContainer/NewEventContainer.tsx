@@ -47,10 +47,7 @@ const NewEventContainer = () => {
     }
 
     const handleClick = () => {
-        console.log('event name: ' + formData.name)
-        console.log('Time start: ' + formData.timeStart,'/ Time end: ' + formData.timeEnd)
-        console.log('Date start: ' + formData.dateStart,'/ Date end: ' + formData.dateEnd)
-        navigate(`/event?name=${formData.name}&timeStart=${formData.timeStart}&timeEnd=${formData.timeEnd}&dateStart=${formData.dateStart}&dateEnd=${formData.dateEnd}`)
+        navigate(`/event?&name=${formData.name}&timeStart=${formData.timeStart}&timeEnd=${formData.timeEnd}&dateStart=${formData.dateStart}&dateEnd=${formData.dateEnd}`)
     }
 
     return (
