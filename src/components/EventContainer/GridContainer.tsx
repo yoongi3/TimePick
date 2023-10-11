@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import DateLabel from "./DateLabel";
 
 const GridContainerWrapper = styled.div`
     display: flex;
@@ -31,9 +32,12 @@ const LabelCell = styled.div`
 type Props = {
     numRows : number;
     numCols : number;
+    startDate: string;
+    endDate: string;
+    timeRange: string[];
 }
 
-const GridContainer = ({numRows, numCols}: Props ) => {
+const GridContainer = ({numRows, numCols , startDate, endDate}: Props ) => {
     const gridRows = Array.from({ length : numRows }, (_, rowIndex) => (
         <GridRow key={rowIndex}>
             {Array.from({ length : numCols}, (_, colIndex) => (
@@ -46,18 +50,16 @@ const GridContainer = ({numRows, numCols}: Props ) => {
         <LabelCell key={rowIndex}>Row{rowIndex +1}</LabelCell>
     ));
 
-    const columnLabels = Array.from({ length: numCols }, (_, ColIndex) => (
-        <LabelCell key={ColIndex}>Col {ColIndex +1}</LabelCell>
-    ));
     return(
         <GridContainerWrapper>
             <GridColumn>
+                <LabelCell></LabelCell>
                 <LabelCell></LabelCell>
                 {rowLabels}
             </GridColumn>
             <div>
             <GridRow>
-                {columnLabels}
+                <DateLabel startDate={startDate} endDate={endDate}/>
             </GridRow>
                 {gridRows}
             </div>

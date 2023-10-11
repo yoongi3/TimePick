@@ -50,13 +50,15 @@ const EventContainer = () => {
         return <p>Loading...</p>;
     }
 
-    const colLength = Math.floor( (new Date(eventInfo.dateEnd).getTime() - new Date(eventInfo.dateStart).getTime()) / (1000 * 60 * 60 * 24));
+    const colLength = Math.floor( (new Date(eventInfo.dateEnd).getTime() - new Date(eventInfo.dateStart).getTime()) / (1000 * 60 * 60 * 24) + 1);
     const rowLength = (parseInt(eventInfo.timeEnd, 10) - parseInt(eventInfo.timeStart, 10)) * 2;
 
     return(
         <Container>
             <p>{eventInfo.name}</p>
-            <GridContainer numCols={colLength} numRows={rowLength}/>
+            <GridContainer numCols={colLength} numRows={rowLength}
+            startDate={eventInfo.dateStart} endDate={eventInfo.dateEnd} 
+            timeRange={[eventInfo.timeStart, eventInfo.timeEnd]}/>
         </Container>
     )
 }
