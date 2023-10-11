@@ -6,7 +6,7 @@ const Container = styled.div`
 const LabelCell = styled.div`
     width: 40px;
     height: 25px;
-    margin: 0 6px;
+    margin: 0 6px 6px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -37,7 +37,7 @@ const formatDate = (dateString: Date) => {
 
 const formatDateRange = (start: string, end: string) => {
     const dateRange = [];
-    const currDate = new Date(start);
+    let currDate = new Date(start);
 
     while (currDate <= new Date(end)){
         dateRange.push(formatDate(currDate));

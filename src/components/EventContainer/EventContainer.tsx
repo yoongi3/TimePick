@@ -58,7 +58,7 @@ const EventContainer = () => {
             <p>{eventInfo.name}</p>
             <GridContainer numCols={colLength} numRows={rowLength}
             startDate={eventInfo.dateStart} endDate={eventInfo.dateEnd} 
-            timeRange={[eventInfo.timeStart, eventInfo.timeEnd]}/>
+            startTime={eventInfo.timeStart} endTime={eventInfo.timeEnd}/>
         </Container>
     )
 }
