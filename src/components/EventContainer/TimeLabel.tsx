@@ -24,8 +24,11 @@ const TimeLabel = ({startTime, endTime}: Props) => {
     const timeRange = [];
     let currTime = parseInt(startTime);
 
-    while (currTime <= parseInt(endTime)){
-        timeRange.push(currTime);
+    while (currTime <= parseInt(endTime)) {
+        const period = currTime < 12 || currTime === 24 ? 'am' : 'pm';
+        const hour = (currTime === 0 || currTime === 12 || currTime === 24) ? 12 : currTime % 12;
+        const formattedTime = `${hour} ${period}`;
+        timeRange.push(formattedTime);
         currTime++;
     }
 
@@ -35,7 +38,7 @@ const TimeLabel = ({startTime, endTime}: Props) => {
             <LabelCell></LabelCell>
             {timeRange.map((time, index) => (
                 <div key={index}>
-                    <LabelCell>{time}:00</LabelCell>
+                    <LabelCell>{time}</LabelCell>
                     <LabelCell></LabelCell>
                 </div>
             ))}

@@ -20,15 +20,6 @@ const GridCell = styled.div`
     background-color: #FFFFFF;
     border: 1px solid black;
 `
-const LabelCell = styled.div`
-    width: 50px;
-    height: 10px;
-    background-color: blue;
-    border: 1px solid black;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-`
 
 type Props = {
     numRows : number;
