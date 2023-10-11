@@ -4,6 +4,9 @@ import { useEffect, useState } from "react"
 
 const Container = styled.div`
 flex-grow : 1;
+display : flex;
+flex-direction : column;
+align-items : center;
 `
 
 type EventInfo = {
@@ -48,7 +51,7 @@ const EventContainer = () => {
     }
 
     const colLength = Math.floor( (new Date(eventInfo.dateEnd).getTime() - new Date(eventInfo.dateStart).getTime()) / (1000 * 60 * 60 * 24));
-    const rowLength = parseInt(eventInfo.timeEnd, 10) - parseInt(eventInfo.timeStart, 10)
+    const rowLength = (parseInt(eventInfo.timeEnd, 10) - parseInt(eventInfo.timeStart, 10)) * 2;
 
     return(
         <Container>
