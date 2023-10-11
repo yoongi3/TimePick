@@ -1,39 +1,61 @@
 import styled from "styled-components"
 import GridContainer from "./GridContainer"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 const Container = styled.div`
 flex-grow : 1;
 `
 
+type EventInfo = {
+    name: string;
+    timeStart: string;
+    timeEnd: string;
+    dateStart: string;
+    dateEnd: string;
+  };
+
 const EventContainer = () => {
+    const [eventInfo, setEventInfo] = useState<EventInfo>({
+        name: '',
+        timeStart: '',
+        timeEnd: '',
+        dateStart: '',
+        dateEnd: '',
+    });
+
     useEffect(() => {
         const currentURL = window.location.href;
         const searchParams = new URLSearchParams(currentURL);
 
         const paramNames = ['name', 'timeStart', 'timeEnd', 'dateStart', 'dateEnd']
+
+        const updatedEventInfo: EventInfo = { ...eventInfo };
+
         paramNames.forEach(paramName => {
-            const paramValue = searchParams.get(paramName)
+            const paramValue = searchParams.get(paramName) ?? '';
+            
             if (paramName) {
-                console.log(paramName + ` is: ${paramValue}`);
+                updatedEventInfo[paramName as keyof EventInfo] = paramValue;
             } else {
                 console.log(paramName + ' not found in URL');
             }
         })
+        setEventInfo(updatedEventInfo);
     }, []);
     
+    if (!eventInfo.name) {
+        return <p>Loading...</p>;
+    }
+
+    const colLength = Math.floor( (new Date(eventInfo.dateEnd).getTime() - new Date(eventInfo.dateStart).getTime()) / (1000 * 60 * 60 * 24));
+    const rowLength = parseInt(eventInfo.timeEnd, 10) - parseInt(eventInfo.timeStart, 10)
 
     return(
         <Container>
-            Title
-            <GridContainer numCols={10} numRows={10}/>
+            <p>{eventInfo.name}</p>
+            <GridContainer numCols={colLength} numRows={rowLength}/>
         </Container>
     )
 }
 
 export default EventContainer
-// title
-
-// single grid
-
-// invite link + add to nav list
