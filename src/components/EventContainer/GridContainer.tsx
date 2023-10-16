@@ -26,7 +26,7 @@ type Props = {
     endTime: string;
 }
 
-const  get_2d_array_filled = (numRows, numCols, fillValue) => {
+const  get_2d_array_filled = (numRows:number, numCols:number, fillValue:number) => {
     return [...Array(numRows)].map(e => Array(numCols).fill(fillValue));
 }
 
@@ -34,18 +34,15 @@ const  get_2d_array_filled = (numRows, numCols, fillValue) => {
 const GridContainer = ({numRows, numCols , startDate, endDate, startTime, endTime}: Props ) => {
     const [matrix, setMatrix] = useState(get_2d_array_filled(numRows, numCols, 0))
     
-    const handleSetMatrix = (row,col) =>{
-        // let newMatrix = matrix;
-        // newMatrix[row][col] = 1;
-        // setMatrix(newMatrix);
+    const handleSetMatrix = (row, col) =>{
         setMatrix(prev => {
-            return prev.map((_row,rowIndex)=>{
+            return prev.map((_row,_rowIndex)=>{
                 console.log(_row);
-                return _row.map((_col,colIndex)=>{
-                    if(row == rowIndex && col == colIndex){
+                return _row.map((_col,_colIndex)=>{
+                    if(row == _rowIndex && col == _colIndex){
                         return 1;
                     }else {
-                        return prev[rowIndex][colIndex];
+                        return prev[_rowIndex][_colIndex];
                     }
                 })
             })
@@ -55,7 +52,7 @@ const GridContainer = ({numRows, numCols , startDate, endDate, startTime, endTim
     const gridRows = Array.from({ length : numRows }, (_, rowIndex) => (
         <GridRow key={rowIndex}>
             {Array.from({ length : numCols}, (_, colIndex) => (
-                    <GridCell handleSetMatrix={handleSetMatrix} matrix={matrix} rowIndex={rowIndex} colIndex={colIndex}/>
+                    <GridCell handleSetMatrix={handleSetMatrix} matrix={matrix} cellRow={rowIndex} cellCol={colIndex}/>
             ))}
         </GridRow>
     ));
