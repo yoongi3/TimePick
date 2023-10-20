@@ -6,6 +6,7 @@ import { useState } from "react";
 
 const GridContainerWrapper = styled.div`
     display: flex;
+    border: 1px solid black;
 `
 
 const GridColumn = styled.div`
@@ -22,7 +23,7 @@ type Props = {
     numCols : number;
     startDate: string;
     endDate: string;
-    startTime: string;
+    startTime: string
     endTime: string;
 }
 
@@ -31,16 +32,16 @@ const  get_2d_array_filled = (numRows:number, numCols:number, fillValue:number) 
 }
 
 
-const GridContainer = ({numRows, numCols , startDate, endDate, startTime, endTime}: Props ) => {
+const GridContainer = ({numRows, numCols , startDate, endDate, startTime, endTime}: Props) => {
     const [matrix, setMatrix] = useState(get_2d_array_filled(numRows, numCols, 0))
     
-    const handleSetMatrix = (row, col) =>{
+    const handleSetMatrix = (cellRow, cellCol) => {
+
         setMatrix(prev => {
             return prev.map((_row,_rowIndex)=>{
-                console.log(_row);
                 return _row.map((_col,_colIndex)=>{
-                    if(row == _rowIndex && col == _colIndex){
-                        return 1;
+                    if(cellRow === _rowIndex && cellCol === _colIndex){
+                        return prev[_rowIndex][_colIndex] === 1 ? 0 : 1;
                     }else {
                         return prev[_rowIndex][_colIndex];
                     }
@@ -49,10 +50,30 @@ const GridContainer = ({numRows, numCols , startDate, endDate, startTime, endTim
         })
     }
 
+    //*************************
+
+    const findSelectedCells = () => {
+        const selectedCells = [];
+
+        matrix.forEach((row, rowIndex) => {
+            row.forEach((cell, colIndex) => {
+                if (cell === 1) {
+                    selectedCells.push({row: rowIndex, col: colIndex});
+                }
+            });
+        });
+        console.log(selectedCells)
+        return selectedCells;
+    }
+
+    //***********************
+
     const gridRows = Array.from({ length : numRows }, (_, rowIndex) => (
         <GridRow key={rowIndex}>
             {Array.from({ length : numCols}, (_, colIndex) => (
-                    <GridCell handleSetMatrix={handleSetMatrix} matrix={matrix} cellRow={rowIndex} cellCol={colIndex}/>
+                    <GridCell key={colIndex} 
+                    handleSetMatrix={handleSetMatrix} matrix={matrix} 
+                    cellRow={rowIndex} cellCol={colIndex}/>
             ))}
         </GridRow>
     ));
@@ -70,6 +91,6 @@ const GridContainer = ({numRows, numCols , startDate, endDate, startTime, endTim
             </div>
         </GridContainerWrapper>
     )
-}
+};
 
 export default GridContainer

@@ -7,7 +7,7 @@ const Container = styled.div`
 
 const LabelCell = styled.div`
     width: 30px;
-    height: 20px;
+    height: 12px;
     margin: 0 6px;
     font-size: 10px;
     display: flex;

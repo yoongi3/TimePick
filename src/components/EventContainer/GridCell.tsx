@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 const Cell = styled.div`
     width: 50px;
-    height: 20px;
+    height: 10px;
     background-color: ${props => (props.color)};
     border: 1px solid black;
     color: black;
@@ -13,7 +13,7 @@ type Prop = {
     cellRow: number;
     cellCol: number;
     matrix: number[][];
-    handleSetMatrix: () => void;
+    handleSetMatrix: (row: number, col: number) => void;
 }
 
 const GridCell = ({cellRow, cellCol, matrix, handleSetMatrix} : Prop) => {
@@ -23,23 +23,24 @@ const GridCell = ({cellRow, cellCol, matrix, handleSetMatrix} : Prop) => {
         handleSetMatrix(cellRow, cellCol);
     }
 
-    const handleDragOver = () =>{
-        handleSetMatrix(cellRow, cellCol);
-    }
+
+    // Need to fix dragover bugs
+
+    // const handleDragOver = () =>{
+    //     handleSetMatrix(cellRow, cellCol);
+    // }
 
     useEffect(()=>{
         if(!matrix){
             return;
         }
-        setColor(matrix[cellRow][cellCol] == 1 ? 'red':'white')
-        console.log('refreshed')
-        console.log(matrix)
+        setColor(matrix[cellRow][cellCol] == 1 ? 'red':'#FFFFFF')
     },[matrix])
 
     return(
         <Cell
             onClick={handleOnClick}
-            onDragOver={handleDragOver}
+            // onDragOver={handleDragOver}
             color={color}
         ></Cell>
     )

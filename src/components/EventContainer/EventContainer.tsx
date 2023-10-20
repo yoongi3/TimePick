@@ -50,15 +50,20 @@ const EventContainer = () => {
         return <p>Loading...</p>;
     }
 
-    const colLength = Math.floor( (new Date(eventInfo.dateEnd).getTime() - new Date(eventInfo.dateStart).getTime()) / (1000 * 60 * 60 * 24) + 1);
-    const rowLength = (parseInt(eventInfo.timeEnd, 10) - parseInt(eventInfo.timeStart, 10)) * 2;
+    const millSecInHour = 1000 * 60 * 60 * 24;
+    // +1 since colLength starts 0
+    const colLength = Math.floor((new Date(eventInfo.dateEnd).getTime() - new Date(eventInfo.dateStart).getTime()) / millSecInHour + 1);
+    // *2 to split hours into 30min intervals
+    const rowLength = (parseInt(eventInfo.timeEnd, 10) - parseInt(eventInfo.timeStart, 10)) * 2; 
 
     return(
         <Container>
             <p>{eventInfo.name}</p>
-            <GridContainer numCols={colLength} numRows={rowLength}
+            <GridContainer 
+            numCols={colLength} numRows={rowLength}
             startDate={eventInfo.dateStart} endDate={eventInfo.dateEnd} 
             startTime={eventInfo.timeStart} endTime={eventInfo.timeEnd}/>
+            <button>submit</button>
         </Container>
     )
 }
