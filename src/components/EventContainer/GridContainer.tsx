@@ -2,19 +2,20 @@ import styled from "styled-components";
 import DateLabel from "./DateLabel";
 import TimeLabel from "./TimeLabel";
 import GridCell from "./GridCell";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useMatrix } from "../Providers/MatrixProvider";
 
 const GridContainerWrapper = styled.div`
     display: flex;
     border: 1px solid black;
 `
 
-const GridColumn = styled.div`
+const TimeContainer = styled.div`
     display: flex;
     flex-direction: column;
 `
 
-const GridRow = styled.div`
+const DateContainer = styled.div`
     display: flex;
 `
 
@@ -27,66 +28,47 @@ type Props = {
     endTime: string;
 }
 
-const  get_2d_array_filled = (numRows:number, numCols:number, fillValue:number) => {
-    return [...Array(numRows)].map(e => Array(numCols).fill(fillValue));
-}
-
-
-const GridContainer = ({numRows, numCols , startDate, endDate, startTime, endTime}: Props) => {
-    const [matrix, setMatrix] = useState(get_2d_array_filled(numRows, numCols, 0))
+const GridContainer = ({ numRows, numCols , startDate, endDate, startTime, endTime }: Props) => {
+    const matrixContext = useMatrix()
+    const {matrix, createNewMatrix} = matrixContext;
     
-    const handleSetMatrix = (cellRow, cellCol) => {
-
-        setMatrix(prev => {
-            return prev.map((_row,_rowIndex)=>{
-                return _row.map((_col,_colIndex)=>{
-                    if(cellRow === _rowIndex && cellCol === _colIndex){
-                        return prev[_rowIndex][_colIndex] === 1 ? 0 : 1;
-                    }else {
-                        return prev[_rowIndex][_colIndex];
-                    }
-                })
-            })
-        })
+    if(!matrixContext){
+        return null;
     }
-
-    //*************************
-
-    const findSelectedCells = () => {
-        const selectedCells = [];
-
-        matrix.forEach((row, rowIndex) => {
-            row.forEach((cell, colIndex) => {
-                if (cell === 1) {
-                    selectedCells.push({row: rowIndex, col: colIndex});
-                }
-            });
-        });
-        console.log(selectedCells)
-        return selectedCells;
-    }
-
-    //***********************
 
     const gridRows = Array.from({ length : numRows }, (_, rowIndex) => (
-        <GridRow key={rowIndex}>
+        <DateContainer key={rowIndex}>
             {Array.from({ length : numCols}, (_, colIndex) => (
-                    <GridCell key={colIndex} 
-                    handleSetMatrix={handleSetMatrix} matrix={matrix} 
-                    cellRow={rowIndex} cellCol={colIndex}/>
+                    <GridCell 
+                        key={colIndex}
+                        cellRow={rowIndex} 
+                        cellCol={colIndex}
+                    />
             ))}
-        </GridRow>
+        </DateContainer>
     ));
+
+    useEffect(() => {
+        if (matrix.length === 0) {
+            createNewMatrix(numRows, numCols);
+        }
+    }, [createNewMatrix, matrix, numRows, numCols]);
+
+    useEffect(() => {
+        console.log(matrix);
+    }, [matrix]);
 
     return(
         <GridContainerWrapper>
-            <GridColumn>
+            <TimeContainer>
                 <TimeLabel startTime={startTime} endTime={endTime}/>
-            </GridColumn>
+            </TimeContainer>
+
             <div>
-            <GridRow>
-                <DateLabel startDate={startDate} endDate={endDate}/>
-            </GridRow>
+                <DateContainer>
+                    <DateLabel startDate={startDate} endDate={endDate}/>
+                </DateContainer>
+
                 {gridRows}
             </div>
         </GridContainerWrapper>
