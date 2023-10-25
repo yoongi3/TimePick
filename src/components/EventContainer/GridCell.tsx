@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useMatrix } from "../Providers/MatrixProvider";
 
 const Cell = styled.div`
     width: 50px;
@@ -12,35 +13,62 @@ const Cell = styled.div`
 type Prop = {
     cellRow: number;
     cellCol: number;
-    matrix: number[][];
-    handleSetMatrix: (row: number, col: number) => void;
 }
 
-const GridCell = ({cellRow, cellCol, matrix, handleSetMatrix} : Prop) => {
-    const [color, setColor] = useState('#FFFFFF');
-
-    const handleOnClick = () => {
-        handleSetMatrix(cellRow, cellCol);
+const GridCell = ({cellRow, cellCol} : Prop) => {
+    const matrixContext = useMatrix()
+    const {matrix, updateCell} = matrixContext;
+    
+    if(!matrixContext){
+        return null;
     }
 
+    const [color, setColor] = useState('#FFFFFF');
 
-    // Need to fix dragover bugs
+    // Customise Colors Here:
+    const baseColor = "white";
+    const onClickColor = "DarkOrange";
+    const onHoverColor = "orange";
+    //
 
-    // const handleDragOver = () =>{
-    //     handleSetMatrix(cellRow, cellCol);
-    // }
+    const handleOnClick = () => {
+        const newValue = matrix[cellRow][cellCol] === 1 ? 0 : 1;
+        updateCell(cellRow, cellCol, newValue)
+    }
 
-    useEffect(()=>{
-        if(!matrix){
+    const handleMouseOver = () => {
+        if (matrix[cellRow][cellCol] === 1){
             return;
+        } else {
+            updateCell(cellRow, cellCol, 2)
         }
-        setColor(matrix[cellRow][cellCol] == 1 ? 'red':'#FFFFFF')
-    },[matrix])
+    }
 
+    const handleMouseLeave = () => {
+        if (matrix[cellRow][cellCol] === 1){
+            return;
+        } else {
+            updateCell(cellRow, cellCol, 0)
+        }
+    }
+
+    useEffect(() =>{
+        if (matrix[cellRow]){
+            const colorMap = {
+                0: baseColor,
+                1: onClickColor,
+                2: onHoverColor,
+            }
+
+            const cellColor = colorMap[matrix[cellRow][cellCol] || baseColor]
+            setColor(cellColor)
+        }
+    }, [matrix])
     return(
         <Cell
             onClick={handleOnClick}
-            // onDragOver={handleDragOver}
+            onMouseEnter={handleMouseOver}
+            onMouseLeave={handleMouseLeave}
             color={color}
         ></Cell>
     )
