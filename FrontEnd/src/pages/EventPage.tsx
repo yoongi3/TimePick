@@ -17,7 +17,6 @@ function EventPage() {
                 <NavBar/>
             </Container>
         </>
-        
     )
 }
 
