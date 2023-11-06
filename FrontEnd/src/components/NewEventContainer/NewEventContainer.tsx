@@ -34,6 +34,8 @@ const BottomContainer = styled.div`
 const NewEventContainer = () => {
     const navigate = useNavigate();
 
+    const [error, setError] = useState('')
+
     const [formData, setFormData] = useState({
         name: '',
         timeStart: 0,
@@ -46,26 +48,58 @@ const NewEventContainer = () => {
         setFormData({...formData, [inputType]: inputValue});
     }
 
-    const handleClick = (event) => {
-        const url = 'http://localhost:8080/events/create';
+    const validateInput = () => {
+        if (formData.name === ''){
+            setError('Name is required.')
+            console.log(error)
+            return false;
+        }
+        else if (formData.timeEnd <= formData.timeStart){
+            setError('Times need to be 1 hour apart')
+            console.log(error)
+            return false;
+        }
+        else if (formData.dateStart === '' || formData.dateEnd === ''){
+            setError('Both start and end dates are required')
+            console.log(error);
+            return false
+        }
 
-        fetch (url, {
-            method: 'Post',
-            headers: {
-                'Content-type': 'application/json',
-            },
-            body: JSON.stringify(formData),
-        })
-        .then((response) => {
-            if(!response.ok){
-                throw new Error ('Network response was not ok')
-            } 
-            return response.json()
-        })
-        .then((data) => {
-            const id = data.id;
-            navigate(`/event/${id}`)
-        })
+        const startDate = new Date(formData.dateStart);
+        const endDate = new Date(formData.dateEnd);
+
+        if (startDate > endDate) {
+            setError('End date must be after start date');
+            console.log(error)
+            return false;
+        }
+
+        setError('');
+        return true;
+    }
+
+    const handleClick = (event) => {
+        if(validateInput()){
+            const url = 'http://localhost:8080/events/create';
+
+            fetch (url, {
+                method: 'Post',
+                headers: {
+                    'Content-type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            })
+            .then((response) => {
+                if(!response.ok){
+                    throw new Error ('Network response was not ok')
+                } 
+                return response.json()
+            })
+            .then((data) => {
+                const id = data.id;
+                navigate(`/event/${id}`)
+            })
+        }
     }
 
     return (
