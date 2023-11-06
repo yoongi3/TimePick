@@ -46,8 +46,26 @@ const NewEventContainer = () => {
         setFormData({...formData, [inputType]: inputValue});
     }
 
-    const handleClick = () => {
-        navigate(`/event?&name=${formData.name}&timeStart=${formData.timeStart}&timeEnd=${formData.timeEnd}&dateStart=${formData.dateStart}&dateEnd=${formData.dateEnd}`)
+    const handleClick = (event) => {
+        const url = 'http://localhost:8080/events/create';
+
+        fetch (url, {
+            method: 'Post',
+            headers: {
+                'Content-type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+        })
+        .then((response) => {
+            if(!response.ok){
+                throw new Error ('Network response was not ok')
+            } 
+            return response.json()
+        })
+        .then((data) => {
+            const id = data.id;
+            navigate(`/event/${id}`)
+        })
     }
 
     return (

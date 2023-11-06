@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { eventsDataBase } from "../Data/EventsDataBase";
 import { v4 as uuidv4 } from "uuid";
-export const eventHandler = (req: Request, res: Response) => {
+
+export const eventCreateHandler = (req: Request, res: Response) => {
     if (req.method != "POST") return;
     if (!req.body) return;
 
@@ -31,17 +32,21 @@ export const eventHandler = (req: Request, res: Response) => {
 
     return res.status(201).json(newEventObj);
 }
+
 export const eventsListHandler = (req: Request, res: Response) => {
-    const name = req.query.name
-    const dateStart = req.query.dateStart;
-    console.log(name)
-    const events = eventsDataBase.filter(event => {
-        console.log(event)
-        if(event.name == name && event.dateStart == dateStart){
-            return true
-        }
-        return false;
-    })
-    console.log(events)
-    return res.status(201).json(events);
+    const id = req.query.id
+    console.log(id)
+    if (id){
+        const events = eventsDataBase.filter(event => {
+            console.log(event)
+            if(event.id == id){
+                return true
+            }
+            return false;
+        })
+        console.log(events)
+        return res.status(200).json(events);
+    }else {
+        return res.status(200).json(eventsDataBase);
+    }
 }

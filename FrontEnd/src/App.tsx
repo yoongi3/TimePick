@@ -9,8 +9,9 @@ function App() {
     <MatrixProvider>
       <Router>
         <Routes>
+          <Route path="/event/:id" element={<EventPage/>}/>
+
           <Route path="/" element={<HomePage/>}/>
-          <Route path="/event" element={<EventPage/>}/>
         </Routes>
       </Router>
     </MatrixProvider>

@@ -1,6 +1,7 @@
 import styled from "styled-components"
 import GridContainer from "./GridContainer"
 import { useEffect, useState } from "react"
+import { useParams } from "react-router-dom"
 
 const Container = styled.div`
 flex-grow : 1;
@@ -10,6 +11,7 @@ align-items : center;
 `
 
 type EventInfo = {
+    id: string;
     name: string;
     timeStart: string;
     timeEnd: string;
@@ -19,6 +21,7 @@ type EventInfo = {
 
 const EventContainer = () => {
     const [eventInfo, setEventInfo] = useState<EventInfo>({
+        id: '',
         name: '',
         timeStart: '',
         timeEnd: '',
@@ -26,26 +29,34 @@ const EventContainer = () => {
         dateEnd: '',
     });
 
+    const {id} = useParams();
+
     useEffect(() => {
-        const currentURL = window.location.href;
-        const searchParams = new URLSearchParams(currentURL);
+        // const currentURL = window.location.href;
+        // const searchParams = new URLSearchParams(currentURL);
 
-        const paramNames = ['name', 'timeStart', 'timeEnd', 'dateStart', 'dateEnd']
+        // const paramNames = ['name', 'timeStart', 'timeEnd', 'dateStart', 'dateEnd']
 
-        const updatedEventInfo: EventInfo = { ...eventInfo };
+        // const updatedEventInfo: EventInfo = { ...eventInfo };
 
-        paramNames.forEach(paramName => {
-            const paramValue = searchParams.get(paramName) ?? '';
+        // paramNames.forEach(paramName => {
+        //     const paramValue = searchParams.get(paramName) ?? '';
             
-            if (paramName) {
-                updatedEventInfo[paramName as keyof EventInfo] = paramValue;
-            } else {
-                console.log(paramName + ' not found in URL');
-            }
+        //     if (paramName) {
+        //         updatedEventInfo[paramName as keyof EventInfo] = paramValue;
+        //     } else {
+        //         console.log(paramName + ' not found in URL');
+        //     }
+        // })
+        fetch(`http://localhost:8080/events?id=${id}`)
+        .then(response => response.json())
+        .then(data => {
+            setEventInfo(data[0])
+            console.log(data)
         })
-        setEventInfo(updatedEventInfo);
     }, []);
     
+    console.log(eventInfo)
     if (!eventInfo.name) {
         return <p>Loading...</p>;
     }
