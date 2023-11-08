@@ -52,20 +52,18 @@ const EventContainer = () => {
         .then(response => response.json())
         .then(data => {
             setEventInfo(data[0])
-            console.log(data)
         })
     }, []);
-    
-    console.log(eventInfo)
+
     if (!eventInfo.name) {
         return <p>Loading...</p>;
     }
 
-    const millSecInHour = 1000 * 60 * 60 * 24;
-    // +1 since colLength starts 0
-    const colLength = Math.floor((new Date(eventInfo.dateEnd).getTime() - new Date(eventInfo.dateStart).getTime()) / millSecInHour + 1);
-    // *2 to split hours into 30min intervals
-    const rowLength = (parseInt(eventInfo.timeEnd, 10) - parseInt(eventInfo.timeStart, 10)) * 2; 
+    const millSecInDay = 1000 * 60 * 60 * 24; // (mill/sec) * (sec/min) * (min/hour) * (hour/day)
+    const colLength = Math.floor((new Date(eventInfo.dateEnd).getTime() - new Date(eventInfo.dateStart).getTime()) / millSecInDay + 1);
+
+    const intervals = 60/30; // 30 min intervals
+    const rowLength = (parseInt(eventInfo.timeEnd, 10) - parseInt(eventInfo.timeStart, 10)) * intervals; 
 
     return(
         <Container>

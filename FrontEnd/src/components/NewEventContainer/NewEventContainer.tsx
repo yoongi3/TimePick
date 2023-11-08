@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import styled from "styled-components"
-import DateSelection from "./DateSelection/DateSelection";
-import TimeSelection from "./TimeSelection/TimeSelection";
-import NameSelection from "./NameSelection/NameSelection";
+import DateSelection from "./Components/DateSelection/DateSelection";
+import TimeSelection from "./Components/TimeSelection/TimeSelection";
+import NameSelection from "./Components/NameSelection/NameSelection";
 import Button from "../Generic/ReusableButton/Button";
+import Popup from "../Generic/Popup/Popup";
 
 const MainContainer = styled.div`
     padding-top : 50px;
@@ -34,52 +35,29 @@ const BottomContainer = styled.div`
 const NewEventContainer = () => {
     const navigate = useNavigate();
 
-    const [error, setError] = useState('')
+    const [showPopup, setShowPopup] = useState(false);
+    const [popupMessage, setPopupMessage] = useState('');
 
     const [formData, setFormData] = useState({
         name: '',
-        timeStart: 0,
-        timeEnd: 0,
+        timeStart: 1,
+        timeEnd: 1,
         dateStart: '',
-        dateEnd: ''
+        dateEnd: '',
     });
     
     const handleInput = (inputType: keyof typeof formData, inputValue: string | number) => {
         setFormData({...formData, [inputType]: inputValue});
     }
 
-    const validateInput = () => {
-        if (formData.name === ''){
-            setError('Name is required.')
-            console.log(error)
-            return false;
-        }
-        else if (formData.timeEnd <= formData.timeStart){
-            setError('Times need to be 1 hour apart')
-            console.log(error)
-            return false;
-        }
-        else if (formData.dateStart === '' || formData.dateEnd === ''){
-            setError('Both start and end dates are required')
-            console.log(error);
-            return false
-        }
-
-        const startDate = new Date(formData.dateStart);
-        const endDate = new Date(formData.dateEnd);
-
-        if (startDate > endDate) {
-            setError('End date must be after start date');
-            console.log(error)
-            return false;
-        }
-
-        setError('');
-        return true;
-    }
-
     const handleClick = (event) => {
-        if(validateInput()){
+        const validationErrors = validateInput();
+        
+        if(validationErrors.length > 0){
+            const errorMessage = (validationErrors.join(', '));
+
+            showErorMessage(errorMessage)
+        }else {
             const url = 'http://localhost:8080/events/create';
 
             fetch (url, {
@@ -100,6 +78,38 @@ const NewEventContainer = () => {
                 navigate(`/event/${id}`)
             })
         }
+    }
+
+    const validateInput = () => {
+        const errors = [];
+
+        const startDate = new Date(formData.dateStart);
+        const endDate = new Date(formData.dateEnd);
+
+        if (formData.name === ''){
+            errors.push('Name is required')
+        }
+        if (formData.timeEnd <= formData.timeStart){
+            errors.push('End time must be after start time')
+        }
+        if (formData.dateStart === '' || formData.dateEnd === ''){
+            errors.push('Both start and end dates are required')
+        }
+        if (startDate > endDate) {
+            errors.push('End date must be after start date');
+        }
+        console.log(errors)
+        return errors;
+    }
+
+    const showErorMessage = (message) => {
+        setPopupMessage(message);
+        setShowPopup(true);
+    }  
+    
+    const hidePopup = () => {
+        setShowPopup(false);
+        setPopupMessage('');
     }
 
     return (
@@ -125,6 +135,9 @@ const NewEventContainer = () => {
                     create
                 </Button>
             </BottomContainer>
+            {showPopup && (
+                <Popup message={popupMessage} onClose={hidePopup} />
+            )}
             
         </MainContainer>
     )
