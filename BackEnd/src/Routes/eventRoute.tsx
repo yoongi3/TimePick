@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { eventsDataBase } from "../Data/EventsDataBase";
+import { eventDatabase } from "../Data/Events";
 import { v4 as uuidv4 } from "uuid";
 
 export const eventCreateHandler = (req: Request, res: Response) => {
@@ -24,9 +24,9 @@ export const eventCreateHandler = (req: Request, res: Response) => {
         dateEnd: dateEnd,
     };
 
-    eventsDataBase.push(newEventObj)
+    eventDatabase.push(newEventObj)
 
-    for (const event of eventsDataBase) {
+    for (const event of eventDatabase) {
         console.log(event);
     }
 
@@ -35,9 +35,8 @@ export const eventCreateHandler = (req: Request, res: Response) => {
 
 export const eventsListHandler = (req: Request, res: Response) => {
     const id = req.query.id
-    console.log(id)
     if (id){
-        const events = eventsDataBase.filter(event => {
+        const events = eventDatabase.filter(event => {
             console.log(event)
             if(event.id == id){
                 return true
@@ -47,6 +46,6 @@ export const eventsListHandler = (req: Request, res: Response) => {
         console.log(events)
         return res.status(200).json(events);
     }else {
-        return res.status(200).json(eventsDataBase);
+        return res.status(200).json(eventDatabase);
     }
 }

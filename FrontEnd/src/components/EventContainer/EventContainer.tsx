@@ -55,9 +55,9 @@ const EventContainer = () => {
         })
     }, []);
 
-    if (!eventInfo.name) {
-        return <p>Loading...</p>;
-    }
+    // if (!eventInfo.name) {
+    //     return <p>Loading...</p>;
+    // }
 
     const millSecInDay = 1000 * 60 * 60 * 24; // (mill/sec) * (sec/min) * (min/hour) * (hour/day)
     const colLength = Math.floor((new Date(eventInfo.dateEnd).getTime() - new Date(eventInfo.dateStart).getTime()) / millSecInDay + 1);

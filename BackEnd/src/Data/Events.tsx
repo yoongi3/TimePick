@@ -1,4 +1,4 @@
-type UserEvent = {
+type Event = {
     id: string,
     name: string,
     timeStart: number,
@@ -7,4 +7,4 @@ type UserEvent = {
     dateEnd: string,
 }
 
-export var eventsDataBase: UserEvent[] = [];
+export var eventDatabase: Event[] = [];
