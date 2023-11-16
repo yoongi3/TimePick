@@ -3,18 +3,22 @@ import HomePage from "./pages/HomePage";
 import EventPage from "./pages/EventPage";
 import './App.css'
 import { MatrixProvider } from "./components/Providers/MatrixProvider";
+import { UserProvider } from "./components/Providers/UserProvider";
 
 function App() {
   return (
-    <MatrixProvider>
-      <Router>
-        <Routes>
-          <Route path="/event/:id" element={<EventPage/>}/>
+    <UserProvider>
+      <MatrixProvider>
+        <Router>
+          <Routes>
+            <Route path="/event/:id" element={<EventPage/>}/>
 
-          <Route path="/" element={<HomePage/>}/>
-        </Routes>
-      </Router>
-    </MatrixProvider>
+            <Route path="/" element={<HomePage/>}/>
+          </Routes>
+        </Router>
+      </MatrixProvider>
+    </UserProvider>
+    
   )
 }
 

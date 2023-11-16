@@ -1,4 +1,6 @@
 import styled from "styled-components"
+import { useUser } from "./Providers/UserProvider"
+import { useState } from "react"
 
 const Container = styled.div`
     background-color : #3D5A80;
@@ -10,12 +12,23 @@ const Container = styled.div`
 `
 
 function NavBar() {
+    const { isLoggedIn, login, logout } = useUser();
+
     return (
         <Container>
-            My Events
-            <p>event1</p>
-            <p>event2</p>
-            <p>event3</p>
+            <div>
+            <span>{isLoggedIn ? 'Welcome, User!' : 'Please log in.'}</span>
+                <div>
+                    {!isLoggedIn && <button onClick={login}>Login</button>}
+                </div>
+                <div>
+                    {isLoggedIn &&
+                    <>
+                        <button onClick={logout}>Logout</button>
+                        <div>dada</div>
+                    </>}
+                </div>
+            </div>
         </Container>
     )
 }
