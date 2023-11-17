@@ -2,6 +2,8 @@ import styled from "styled-components"
 import GridContainer from "./GridContainer"
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
+import { useUser } from "../Providers/UserProvider"
+import LoginBox from "../Generic/AuthBox/AuthBox"
 
 const Container = styled.div`
 flex-grow : 1;
@@ -20,6 +22,8 @@ type EventInfo = {
   };
 
 const EventContainer = () => {
+    const { isLoggedIn, login, logout } = useUser();
+
     const [eventInfo, setEventInfo] = useState<EventInfo>({
         id: '',
         name: '',
@@ -32,32 +36,12 @@ const EventContainer = () => {
     const {id} = useParams();
 
     useEffect(() => {
-        // const currentURL = window.location.href;
-        // const searchParams = new URLSearchParams(currentURL);
-
-        // const paramNames = ['name', 'timeStart', 'timeEnd', 'dateStart', 'dateEnd']
-
-        // const updatedEventInfo: EventInfo = { ...eventInfo };
-
-        // paramNames.forEach(paramName => {
-        //     const paramValue = searchParams.get(paramName) ?? '';
-            
-        //     if (paramName) {
-        //         updatedEventInfo[paramName as keyof EventInfo] = paramValue;
-        //     } else {
-        //         console.log(paramName + ' not found in URL');
-        //     }
-        // })
         fetch(`http://localhost:8080/events?id=${id}`)
         .then(response => response.json())
         .then(data => {
             setEventInfo(data[0])
         })
     }, []);
-
-    // if (!eventInfo.name) {
-    //     return <p>Loading...</p>;
-    // }
 
     const millSecInDay = 1000 * 60 * 60 * 24; // (mill/sec) * (sec/min) * (min/hour) * (hour/day)
     const colLength = Math.floor((new Date(eventInfo.dateEnd).getTime() - new Date(eventInfo.dateStart).getTime()) / millSecInDay + 1);
@@ -67,13 +51,23 @@ const EventContainer = () => {
 
     return(
         <Container>
-            <p>{eventInfo.name}</p>
-            <GridContainer 
-            numCols={colLength} numRows={rowLength}
-            startDate={eventInfo.dateStart} endDate={eventInfo.dateEnd} 
-            startTime={eventInfo.timeStart} endTime={eventInfo.timeEnd}
-            />
-            <button>submit</button>
+            {!isLoggedIn && 
+                <>
+                    <div>Login to edit availabilities</div>
+                </>
+            }
+            
+            {isLoggedIn &&
+                <>
+                    <p>{eventInfo.name}</p>
+                    <GridContainer 
+                    numCols={colLength} numRows={rowLength}
+                    startDate={eventInfo.dateStart} endDate={eventInfo.dateEnd} 
+                    startTime={eventInfo.timeStart} endTime={eventInfo.timeEnd}
+                    />
+                    <button>submit and save</button>
+                </>
+            }
         </Container>
     )
 }
