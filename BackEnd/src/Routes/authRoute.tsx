@@ -24,8 +24,8 @@ export const registerHandler = (req: Request, res: Response) => {
       };
 
       // password validation
-      if (password.length < 9){
-        res.send("password requires minimum of 9 characters \n")
+      if (password.length < 5){
+        res.send("password requires minimum of 5 characters \n")
         return;
       }
       if(checkAlphaNum(password)){
@@ -75,16 +75,19 @@ export const loginHandler = (req: any, res: any) => {
   try {
     const user = userDatabase.find(user => user.username === username)
     if (!user) { 
-        res.send("username does not exist"); 
+      res.status(400).json({ error: "username does not exist" }); 
         return;
     }
     if (user.password !== password) { 
-        res.send("invalid credentials"); 
+        res.status(400).json({ error: "invalid credentials" }); 
         return;
     }
 
-    res.send(`login successful!\nwelcome ${user.displayName}!!!\n`)
+    res.json({
+      message: `login successful!\nwelcome ${user.displayName}!!!`,
+      displayName: user.displayName,
+    })
   } catch(err) {
-    res.send("an error has occurred")
+    res.status(500).json({ error: 'an error has occurred' });
   }
 }

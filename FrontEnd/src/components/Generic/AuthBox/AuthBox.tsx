@@ -19,7 +19,7 @@ const Container = styled.div`
 `
 
 export const LoginBox = () => {
-    const { isLoggedIn,login } = useUser();
+    const { login, name } = useUser();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
@@ -31,8 +31,40 @@ export const LoginBox = () => {
         setPassword(event.target.value);
     }
 
-    const handleLogin = () => {
-        login();
+    const handleLogin = async () => {
+        fetch('http://localhost:8080/login',{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    return response.json().then(data => {
+                        console.error('Error during login:', data.error);
+                    });
+                } else {
+                    console.error('Error during login:', 'Server response was not JSON');
+                }
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.displayName) {
+                const { displayName } = data;
+                login(displayName);
+                console.log(`Login successful, welcome ${displayName}`);
+            } else {
+            console.error('Error during login: Missing or undefined displayName property in response');
+        }
+        })
+        .catch(error => {
+            console.error('Error during login:', error.message);
+        });
     }
 
     return(

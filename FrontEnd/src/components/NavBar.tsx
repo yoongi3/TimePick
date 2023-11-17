@@ -13,7 +13,7 @@ const Container = styled.div`
 `
 
 function NavBar() {
-    const { isLoggedIn, login, logout } = useUser();
+    const { isLoggedIn, login, logout, name } = useUser();
     const [activeAction, setActiveAction] = useState(null);
 
     const handleAction = (action) => {
@@ -28,7 +28,7 @@ function NavBar() {
     return (
         <Container>
             <div>
-            <span>{isLoggedIn ? 'Welcome, User!' : 'Log in to see saved events.'}</span>
+            <span>{isLoggedIn ? `Welcome, ${name}!` : 'Log in to see saved events.'}</span>
                 <div>
                     {!isLoggedIn && (
                         <>

@@ -16,5 +16,5 @@ app.post("/events/create", eventCreateHandler)
 
 // User routes
 app.get("/users", usersListHandler)
-app.post(`/register`, registerHandler)
-app.post(`/login`, loginHandler)
+app.post("/register", registerHandler)
+app.post("/login", loginHandler)

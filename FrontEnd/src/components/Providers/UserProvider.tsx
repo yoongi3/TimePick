@@ -2,25 +2,29 @@ import { createContext, useContext, useState } from "react";
 
 type UserContextType = {
     isLoggedIn: boolean;
-    login: () => void;
+    login: (newName?: string) => void;
     logout: () => void;
+    name: string;
 }
 
 const UserContext = createContext < UserContextType | undefined > (undefined);
 
 export const UserProvider = ({ children }) => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [ isLoggedIn, setIsLoggedIn ] = useState(false);
+    const [ name, setName ] = useState("")
 
-    const login = () =>{
+    const login = (newName = "") =>{
         setIsLoggedIn(true);
+        setName(newName);
     }
 
     const logout = () =>{
         setIsLoggedIn(false);
+        setName("");
     }
 
     return(
-        <UserContext.Provider value={{ isLoggedIn, login, logout }}>
+        <UserContext.Provider value={{ isLoggedIn, login, logout, name }}>
             {children}
         </UserContext.Provider>
     )

@@ -54,10 +54,6 @@ const GridContainer = ({ numRows, numCols , startDate, endDate, startTime, endTi
         }
     }, [createNewMatrix, matrix, numRows, numCols]);
 
-    useEffect(() => {
-        console.log(matrix);
-    }, [matrix]);
-
     return(
         <GridContainerWrapper>
             <TimeContainer>
