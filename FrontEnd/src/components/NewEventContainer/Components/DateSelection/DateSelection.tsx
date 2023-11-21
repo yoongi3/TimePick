@@ -8,12 +8,13 @@ font-size : 16px;
 `
 const Container = styled.div`
 display: flex;
-justify-content: space-evenly;
+justify-content: space-between;
+margin-top: 5px;
 `
 const DateBox = styled.div`
 background: #E0FBFC;
-width: 45%;
-height: 200px;
+width: 40%;
+height: 100px;
 border-radius: 5px
 `
 

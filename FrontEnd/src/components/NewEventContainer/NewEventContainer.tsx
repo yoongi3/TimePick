@@ -4,8 +4,9 @@ import styled from "styled-components"
 import DateSelection from "./Components/DateSelection/DateSelection";
 import TimeSelection from "./Components/TimeSelection/TimeSelection";
 import NameSelection from "./Components/NameSelection/NameSelection";
-import Button from "../Generic/ReusableButton/Button";
+import { Button } from "../Generic/Button/Button";
 import Popup from "../Generic/Popup/Popup";
+import { useUser } from "../Providers/UserProvider";
 
 const MainContainer = styled.div`
     padding-top : 50px;
@@ -22,7 +23,7 @@ const TopContainer = styled.div`
     font-size : 16px;
 `
 const BottomContainer = styled.div`
-    padding : 10px;
+    padding : 20px;
     margin : 20px;
     width : 50%;
     background-color : #3D5A80;
@@ -31,8 +32,14 @@ const BottomContainer = styled.div`
     align-self:center;
     box-shadow: rgb(0 0 0 / 25%) 0px 4px 5px 0px;
 `
+const ButtonContainer = styled.div`
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+`
 
 const NewEventContainer = () => {
+    const { isLoggedIn } = useUser();
     const navigate = useNavigate();
 
     const [showPopup, setShowPopup] = useState(false);
@@ -51,6 +58,11 @@ const NewEventContainer = () => {
     }
 
     const handleClick = (event) => {
+
+        if (!isLoggedIn) {
+            showErorMessage('You need to be logged in to create an event');
+            return;
+        }
         const validationErrors = validateInput();
         
         if(validationErrors.length > 0){
@@ -129,11 +141,11 @@ const NewEventContainer = () => {
                     onStartInput={(input => handleInput("dateStart", input))}
                     onEndInput={(input => handleInput("dateEnd", input))}
                 />
-                <Button 
-                    onClick={handleClick} 
-                    style={{backgroundColor: '#EE6C4D', color: '#FFFFFF'}}>
-                    create
-                </Button>
+                <ButtonContainer>
+                    <Button onClick={handleClick}>
+                        create
+                    </Button>
+                </ButtonContainer>
             </BottomContainer>
             {showPopup && (
                 <Popup message={popupMessage} onClose={hidePopup} />
