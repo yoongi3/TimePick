@@ -1,7 +1,8 @@
-import React, { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import InputBox from "../InputBox/InputBox";
 import { useUser } from "../../Providers/UserProvider";
 import styled from "styled-components";
+import { Button } from "../Button/Button";
 
 const Container = styled.div`
     display: flex;
@@ -16,7 +17,30 @@ const Container = styled.div`
     border: 1px solid #ccc;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background: #3D5A80;
 `
+
+const fetchHandler = async (url: string, method: string, body: Object) => {
+    const response = await fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            const data = await response.json();
+            throw new Error(data.error || 'Server error');
+        } else {
+            throw new Error('Network response was not ok');
+        }
+    }
+
+    return response.json();
+}
 
 export const LoginBox = () => {
     const { login, name } = useUser();
@@ -32,39 +56,19 @@ export const LoginBox = () => {
     }
 
     const handleLogin = async () => {
-        fetch('http://localhost:8080/login',{
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ username, password }),
-        })
-        .then(response => {
-            if (!response.ok) {
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    return response.json().then(data => {
-                        console.error('Error during login:', data.error);
-                    });
-                } else {
-                    console.error('Error during login:', 'Server response was not JSON');
-                }
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
+        try {
+            const data = await fetchHandler('http://localhost:8080/login', 'POST', { username, password });
+
             if (data && data.displayName) {
                 const { displayName } = data;
                 login(displayName);
                 console.log(`Login successful, welcome ${displayName}`);
             } else {
-            console.error('Error during login: Missing or undefined displayName property in response');
-        }
-        })
-        .catch(error => {
+                console.error('Error during login: Missing or undefined displayName property in response');
+            }
+        } catch(error: any) {
             console.error('Error during login:', error.message);
-        });
+        };
     }
 
     return(
@@ -79,7 +83,7 @@ export const LoginBox = () => {
             value={password}
             onChange={handlePasswordChange}
         /> 
-        <button onClick={handleLogin}>Login</button>
+        <Button onClick={handleLogin}>Login</Button>
     </Container>
     
     )
@@ -104,28 +108,9 @@ export const SignupBox = () => {
     }
 
     const handleSignup = async () => {
-        fetch('http://localhost:8080/register',{
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ displayName, username, password}),
-        })
-        .then(response => {
-            if (!response.ok){
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    return response.json().then(data => {
-                        console.error('Error during register:', data.error);
-                    });
-                } else {
-                    console.error('Error during register:', 'Server response was not JSON');
-                }
-                throw new Error('Netwoek response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
+        try {
+            const data = await fetchHandler('http://localhost:8080/register', 'POST', { displayName, username, password });
+
             console.log('Server response:', data);
 
             if (data && !data.error) {
@@ -134,10 +119,9 @@ export const SignupBox = () => {
             } else {
                 console.error('Error during Register:', data ? data.error: 'Unexpected response format');
             }
-        })
-        .catch(error => {
+        } catch (error: any) {
             console.error('Error during register', error.message);
-        })
+        }
     }
 
     return(
@@ -157,7 +141,7 @@ export const SignupBox = () => {
             value={password}
             onChange={handlePasswordChange}
         /> 
-        <button onClick={handleSignup}>Sign Up</button>
+        <Button onClick={handleSignup}>Sign Up</Button>
     </Container>
     )
 }
