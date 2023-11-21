@@ -25,11 +25,11 @@ export const registerHandler = (req: Request, res: Response) => {
 
       // password validation
       if (password.length < 5){
-        res.send("password requires minimum of 5 characters \n")
+        res.json({ error: "password requires minimum of 5 characters" });
         return;
       }
       if(checkAlphaNum(password)){
-        res.send("password requires a mix of letters and numbers \n")
+        res.json({ error: "password requires a mix of letters and numbers" });
         return;
       }
 
@@ -37,9 +37,9 @@ export const registerHandler = (req: Request, res: Response) => {
       for (const user of userDatabase) {
         console.log(user);
       }
-      res.send("user registered \n")
+      res.json({ message: "user registered" });
     }
-    res.send("user already exists \n")
+    res.json({ error: "user already exists" });
   } catch(err) {
     // do nothing 
   }

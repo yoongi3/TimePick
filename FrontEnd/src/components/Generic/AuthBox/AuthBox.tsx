@@ -87,12 +87,12 @@ export const LoginBox = () => {
 
 export const SignupBox = () => {
     const { login } = useUser();
-    const [ name, setName ] = useState("");
+    const [ displayName, setDisplayName ] = useState("");
     const [ username, setUsername ] = useState("");
     const [ password, setPassword ] = useState("");
 
     const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setName(event.target.value);
+        setDisplayName(event.target.value);
     } 
 
     const handleUsernameChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -103,15 +103,48 @@ export const SignupBox = () => {
         setPassword(event.target.value);
     }
 
-    const handleLogin = () => {
-        login();
+    const handleSignup = async () => {
+        fetch('http://localhost:8080/register',{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ displayName, username, password}),
+        })
+        .then(response => {
+            if (!response.ok){
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    return response.json().then(data => {
+                        console.error('Error during register:', data.error);
+                    });
+                } else {
+                    console.error('Error during register:', 'Server response was not JSON');
+                }
+                throw new Error('Netwoek response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Server response:', data);
+
+            if (data && !data.error) {
+                login(displayName);
+                console.log(`Register successful, welcome ${displayName} `)
+            } else {
+                console.error('Error during Register:', data ? data.error: 'Unexpected response format');
+            }
+        })
+        .catch(error => {
+            console.error('Error during register', error.message);
+        })
     }
 
     return(
     <Container>
         <InputBox 
             placeholder="Display Name"
-            value={name}
+            value={displayName}
             onChange={handleNameChange}
         /> 
         <InputBox 
@@ -124,7 +157,7 @@ export const SignupBox = () => {
             value={password}
             onChange={handlePasswordChange}
         /> 
-        <button onClick={handleLogin}>Sign Up</button>
+        <button onClick={handleSignup}>Sign Up</button>
     </Container>
     )
 }
