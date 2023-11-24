@@ -12,6 +12,7 @@ export const eventCreateHandler = (req: Request, res: Response) => {
     const timeEnd = requestBody.timeEnd;
     const dateStart = requestBody.dateStart;
     const dateEnd = requestBody.dateEnd;
+    const participants = [requestBody.participants];
 
     const uuid = uuidv4();
 
@@ -22,6 +23,7 @@ export const eventCreateHandler = (req: Request, res: Response) => {
         timeEnd: timeEnd,
         dateStart: dateStart,
         dateEnd: dateEnd,
+        participants: participants,
     };
 
     eventDatabase.push(newEventObj)
@@ -49,3 +51,22 @@ export const eventsListHandler = (req: Request, res: Response) => {
         return res.status(200).json(eventDatabase);
     }
 }
+
+export const participantHandler = (req: Request, res: Response) => {
+    const eventId = req.params.eventId;
+    const { participantId } = req.body;
+  
+    const event = eventDatabase.find((e) => e.id === eventId);
+  
+    if (event) {
+        if (event.participants.includes(participantId)) {
+            res.status(400).json({ error: "User is already a participant in this event" });
+        } else {
+            event.participants.push(participantId);
+            console.log(event.participants);
+            res.status(200).json(event);
+        }
+    } else {
+        res.status(404).json({ error: "Event not found" });
+    }
+};

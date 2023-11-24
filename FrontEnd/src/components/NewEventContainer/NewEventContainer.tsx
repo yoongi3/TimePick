@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import styled from "styled-components"
 import DateSelection from "./Components/DateSelection/DateSelection";
@@ -39,8 +39,14 @@ const ButtonContainer = styled.div`
 `
 
 const NewEventContainer = () => {
-    const { isLoggedIn } = useUser();
+    const { isLoggedIn, id } = useUser();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        console.log("ID has changed: ", id)
+        formData.participants = id;
+    },[id])
+    
 
     const [showPopup, setShowPopup] = useState(false);
     const [popupMessage, setPopupMessage] = useState('');
@@ -51,6 +57,7 @@ const NewEventContainer = () => {
         timeEnd: 1,
         dateStart: '',
         dateEnd: '',
+        participants: '',
     });
     
     const handleInput = (inputType: keyof typeof formData, inputValue: string | number) => {
@@ -70,6 +77,8 @@ const NewEventContainer = () => {
 
             showErorMessage(errorMessage)
         }else {
+            handleInput("participants", id);
+
             const url = 'http://localhost:8080/events/create';
 
             fetch (url, {

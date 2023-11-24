@@ -3,6 +3,7 @@ import InputBox from "../InputBox/InputBox";
 import { useUser } from "../../Providers/UserProvider";
 import styled from "styled-components";
 import { Button } from "../Button/Button";
+import { addParticipantToEvent } from "../../Services/EventService";
 
 const Container = styled.div`
     display: flex;
@@ -43,7 +44,7 @@ const fetchHandler = async (url: string, method: string, body: Object) => {
 }
 
 export const LoginBox = ( {onClose} ) => {
-    const { login, name } = useUser();
+    const { login } = useUser();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
@@ -60,8 +61,8 @@ export const LoginBox = ( {onClose} ) => {
             const data = await fetchHandler('http://localhost:8080/login', 'POST', { username, password });
 
             if (data && data.displayName) {
-                const { displayName } = data;
-                login(displayName);
+                const { displayName, id } = data;
+                login(displayName, id);
                 console.log(`Login successful, welcome ${displayName}`);
             } else {
                 console.error('Error during login: Missing or undefined displayName property in response');
@@ -110,13 +111,18 @@ export const SignupBox = ( {onClose} ) => {
 
     const handleSignup = async () => {
         try {
-            const data = await fetchHandler('http://localhost:8080/register', 'POST', { displayName, username, password });
+            const data = await fetchHandler('http://localhost:8080/register', 'POST', {
+                displayName, 
+                username, 
+                password 
+            });
 
             console.log('Server response:', data);
 
             if (data && !data.error) {
-                login(displayName);
-                console.log(`Register successful, welcome ${displayName} `)
+                const { displayName, id } = data;
+                login(displayName, id);
+                console.log(`Register successful, welcome ${displayName} ${id}`)
             } else {
                 console.error('Error during Register:', data ? data.error: 'Unexpected response format');
             }

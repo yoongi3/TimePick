@@ -42,7 +42,10 @@ export const registerHandler = (req: Request, res: Response) => {
       for (const user of userDatabase) {
         console.log(user);
       }
-      res.json({ message: "user registered" });
+      res.json({ 
+        message: `user registered ${uuid}`,
+        displayName: displayName,
+        id: uuid, });
     }
     res.json({ error: "user already exists" });
   } catch(err) {
@@ -91,6 +94,7 @@ export const loginHandler = (req: any, res: any) => {
     res.json({
       message: `login successful!\nwelcome ${user.displayName}!!!`,
       displayName: user.displayName,
+      id: user.id,
     })
   } catch(err) {
     res.status(500).json({ error: 'an error has occurred' });

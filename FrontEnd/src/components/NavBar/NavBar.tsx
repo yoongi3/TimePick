@@ -5,7 +5,7 @@ import { ActionButtons, Container, UserSection, WelcomeMessage } from "./NavBarS
 import { AuthButton } from "../Generic/Button/Button";
 
 function NavBar() {
-    const { isLoggedIn, logout, name } = useUser();
+    const { isLoggedIn, logout, displayName } = useUser();
     const [activeAction, setActiveAction] = useState(null);
 
     const handleAction = (action) => {
@@ -26,7 +26,7 @@ function NavBar() {
             <div>
                 <WelcomeMessage>
                     {isLoggedIn 
-                    ? `Welcome, ${name}!` 
+                    ? `Welcome, ${displayName}!` 
                     : 'Log in to see and edit events.'}
                 </WelcomeMessage>
                 <ActionButtons>
