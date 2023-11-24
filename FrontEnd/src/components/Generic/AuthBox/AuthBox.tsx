@@ -42,7 +42,7 @@ const fetchHandler = async (url: string, method: string, body: Object) => {
     return response.json();
 }
 
-export const LoginBox = () => {
+export const LoginBox = ( {onClose} ) => {
     const { login, name } = useUser();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -73,6 +73,7 @@ export const LoginBox = () => {
 
     return(
     <Container>
+        <Button onClick={onClose}>X</Button>
         <InputBox 
             placeholder="Username"
             value={username}
@@ -89,7 +90,7 @@ export const LoginBox = () => {
     )
 }
 
-export const SignupBox = () => {
+export const SignupBox = ( {onClose} ) => {
     const { login } = useUser();
     const [ displayName, setDisplayName ] = useState("");
     const [ username, setUsername ] = useState("");
@@ -126,6 +127,7 @@ export const SignupBox = () => {
 
     return(
     <Container>
+        <Button onClick={onClose}>X</Button>
         <InputBox 
             placeholder="Display Name"
             value={displayName}

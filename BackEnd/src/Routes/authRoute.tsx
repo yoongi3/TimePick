@@ -1,6 +1,8 @@
 import { Request,Response} from 'express';
 import { userDatabase } from '../Data/Users';
 import { checkAlphaNum } from './util';
+import { v4 as uuidv4 } from "uuid";
+
 
 export const registerHandler = (req: Request, res: Response) => {
   // only excepts post request
@@ -12,12 +14,15 @@ export const registerHandler = (req: Request, res: Response) => {
   const username = requestBody.username
   const password = requestBody.password
 
+  const uuid = uuidv4();
+
   try {
     // case insensitive check for existing user
     const userExists = userDatabase.find(user => user.username.toLowerCase() === username.toLowerCase())
 
     if (!userExists) {
       const newUserObj = {
+        id: uuid,
         displayName: displayName,
         username: username,
         password: password

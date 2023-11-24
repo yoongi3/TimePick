@@ -12,10 +12,14 @@ function NavBar() {
         setActiveAction(action);
       };
     
-      const handleLogout = () => {
+    const handleLogout = () => {
         setActiveAction(null);
         logout();
-      };
+    };
+
+    const handleCloseAuthBox = () => {
+        setActiveAction(null);
+    }
 
     return (
         <Container>
@@ -29,9 +33,9 @@ function NavBar() {
                     {!isLoggedIn && (
                         <>
                             <AuthButton onClick={()=>handleAction("signin")}>Login</AuthButton>
-                            {activeAction === "signin" && <LoginBox/>}
+                            {activeAction === "signin" && <LoginBox onClose={handleCloseAuthBox}/>}
                             <AuthButton onClick={()=>handleAction("signup")}>Signup</AuthButton>
-                            {activeAction === "signup" && <SignupBox/>}
+                            {activeAction === "signup" && <SignupBox onClose={handleCloseAuthBox}/>}
                         </>
                     )}
                 </ActionButtons>
