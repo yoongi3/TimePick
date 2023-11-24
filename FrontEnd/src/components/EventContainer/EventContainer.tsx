@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { useUser } from "../Providers/UserProvider"
 import { addParticipantToEvent } from "../Services/EventService"
+import { Button } from "../Generic/Button/Button"
 
 const Container = styled.div`
 flex-grow : 1;
@@ -23,6 +24,7 @@ type EventInfo = {
 
 const EventContainer = () => {
     const { isLoggedIn, id: userID } = useUser();
+    const {id} = useParams();
 
     const [eventInfo, setEventInfo] = useState<EventInfo>({
         id: '',
@@ -33,32 +35,24 @@ const EventContainer = () => {
         dateEnd: '',
     });
 
-    const {id} = useParams();
-
     useEffect(() => {
         fetch(`http://localhost:8080/events?id=${id}`)
         .then(response => response.json())
         .then(data => {
             setEventInfo(data[0])
         })
-    }, []);
+    }, [id]);
 
-    useEffect (() => {
-        const addParticipant = async () => {
-            try {
-              const data = await addParticipantToEvent(id, userID);
-              console.log("Participant added to the event:", data);
-            } catch (error) {
-              console.error("Error adding participant to the event:", error);
-            }
-          };
-      
-          if (isLoggedIn) {
-            addParticipant();
+    const handleAddParticipant = async () => {
+        try {
+            await addParticipantToEvent(eventInfo.id, userID); // Replace 'userID' with the actual user ID
+            console.log('Participant added to the event');
+          } catch (error) {
+            console.error('Error adding participant to the event:', error);
           }
-    },[isLoggedIn, id, userID])
+    }
 
-    const millSecInDay = 1000 * 60 * 60 * 24; // (mill/sec) * (sec/min) * (min/hour) * (hour/day)
+    const millSecInDay = 1000 * 60 * 60 * 24;
     const colLength = Math.floor((new Date(eventInfo.dateEnd).getTime() - new Date(eventInfo.dateStart).getTime()) / millSecInDay + 1);
 
     const intervals = 60/30; // 30 min intervals
@@ -66,12 +60,8 @@ const EventContainer = () => {
 
     return(
         <Container>
-            {!isLoggedIn && 
-                <>
-                    <div>Login to edit availabilities</div>
-                </>
-            }
-            
+            {!isLoggedIn && <div>Login to edit availabilities</div>}
+
             {isLoggedIn &&
                 <>
                     <p>{eventInfo.name}</p>
@@ -80,7 +70,7 @@ const EventContainer = () => {
                     startDate={eventInfo.dateStart} endDate={eventInfo.dateEnd} 
                     startTime={eventInfo.timeStart} endTime={eventInfo.timeEnd}
                     />
-                    <button>submit and save</button>
+                    <Button onClick={handleAddParticipant}>submit and save</Button>
                 </>
             }
         </Container>
