@@ -43,7 +43,6 @@ const NewEventContainer = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        console.log("ID has changed: ", id)
         formData.participants = id;
     },[id])
     

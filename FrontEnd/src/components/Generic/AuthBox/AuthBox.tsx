@@ -3,7 +3,7 @@ import InputBox from "../InputBox/InputBox";
 import { useUser } from "../../Providers/UserProvider";
 import styled from "styled-components";
 import { Button } from "../Button/Button";
-import { addParticipantToEvent } from "../../Services/EventService";
+import Popup from "../Popup/Popup";
 
 const Container = styled.div`
     display: flex;
@@ -48,6 +48,19 @@ export const LoginBox = ( {onClose} ) => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
+    const [showPopup, setShowPopup] = useState(false);
+    const [popupMessage, setPopupMessage] = useState('');
+
+    const showErorMessage = (message) => {
+        setPopupMessage(message);
+        setShowPopup(true);
+    }  
+    
+    const hidePopup = () => {
+        setShowPopup(false);
+        setPopupMessage('');
+    }
+
     const handleUsernameChange = (event: ChangeEvent<HTMLInputElement>) => {
         setUsername(event.target.value);
     } 
@@ -68,26 +81,31 @@ export const LoginBox = ( {onClose} ) => {
                 console.error('Error during login: Missing or undefined displayName property in response');
             }
         } catch(error: any) {
+            showErorMessage(error.message)
             console.error('Error during login:', error.message);
         };
     }
 
     return(
-    <Container>
-        <Button onClick={onClose}>X</Button>
-        <InputBox 
-            placeholder="Username"
-            value={username}
-            onChange={handleUsernameChange}
-        /> 
-        <InputBox 
-            placeholder="Password"
-            value={password}
-            onChange={handlePasswordChange}
-        /> 
-        <Button onClick={handleLogin}>Login</Button>
-    </Container>
-    
+        <>
+            <Container>
+            <Button onClick={onClose}>X</Button>
+            <InputBox 
+                placeholder="Username"
+                value={username}
+                onChange={handleUsernameChange}
+            /> 
+            <InputBox 
+                placeholder="Password"
+                value={password}
+                onChange={handlePasswordChange}
+            /> 
+            <Button onClick={handleLogin}>Login</Button>
+            </Container>
+            {showPopup && (
+                <Popup message={popupMessage} onClose={hidePopup}/>
+            )}
+        </>
     )
 }
 
@@ -96,6 +114,19 @@ export const SignupBox = ( {onClose} ) => {
     const [ displayName, setDisplayName ] = useState("");
     const [ username, setUsername ] = useState("");
     const [ password, setPassword ] = useState("");
+
+    const [showPopup, setShowPopup] = useState(false);
+    const [popupMessage, setPopupMessage] = useState('');
+
+    const showErorMessage = (message) => {
+        setPopupMessage(message);
+        setShowPopup(true);
+    }  
+    
+    const hidePopup = () => {
+        setShowPopup(false);
+        setPopupMessage('');
+    }
 
     const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
         setDisplayName(event.target.value);
@@ -117,39 +148,43 @@ export const SignupBox = ( {onClose} ) => {
                 password 
             });
 
-            console.log('Server response:', data);
-
             if (data && !data.error) {
                 const { displayName, id } = data;
                 login(displayName, id);
-                console.log(`Register successful, welcome ${displayName} ${id}`)
             } else {
+                showErorMessage(data.error)
                 console.error('Error during Register:', data ? data.error: 'Unexpected response format');
             }
         } catch (error: any) {
+            showErorMessage(error.message)
             console.error('Error during register', error.message);
         }
     }
 
     return(
-    <Container>
-        <Button onClick={onClose}>X</Button>
-        <InputBox 
-            placeholder="Display Name"
-            value={displayName}
-            onChange={handleNameChange}
-        /> 
-        <InputBox 
-            placeholder="Username"
-            value={username}
-            onChange={handleUsernameChange}
-        /> 
-        <InputBox 
-            placeholder="Password"
-            value={password}
-            onChange={handlePasswordChange}
-        /> 
-        <Button onClick={handleSignup}>Sign Up</Button>
-    </Container>
+        <>
+            <Container>
+                <Button onClick={onClose}>X</Button>
+                <InputBox 
+                    placeholder="Display Name"
+                    value={displayName}
+                    onChange={handleNameChange}
+                /> 
+                <InputBox 
+                    placeholder="Username"
+                    value={username}
+                    onChange={handleUsernameChange}
+                /> 
+                <InputBox 
+                    placeholder="Password"
+                    value={password}
+                    onChange={handlePasswordChange}
+                /> 
+                <Button onClick={handleSignup}>Sign Up</Button>
+            </Container> 
+            {showPopup && (
+                <Popup message={popupMessage} onClose={hidePopup}/>
+            )}
+        </>
     )
 }

@@ -9,10 +9,12 @@ export const registerHandler = (req: Request, res: Response) => {
   if (req.method != "POST") return;
   if (!req.body) return;
 
-  const requestBody = req.body;
-  const displayName = requestBody.displayName
-  const username = requestBody.username
-  const password = requestBody.password
+  // const requestBody = req.body;
+  // const displayName = requestBody.displayName
+  // const username = requestBody.username
+  // const password = requestBody.password
+  
+  const { displayName, username, password } = req.body
 
   const uuid = uuidv4();
 
@@ -21,6 +23,22 @@ export const registerHandler = (req: Request, res: Response) => {
     const userExists = userDatabase.find(user => user.username.toLowerCase() === username.toLowerCase())
 
     if (!userExists) {
+
+      if (displayName.length < 1){
+        return res.json({error: "please enter a name"});
+      }
+      if (username.length < 1){
+        return res.json({error: "please enter a username"});
+      }
+
+      // password validation
+      if (password.length < 5){
+        return res.json({ error: "password requires minimum of 5 characters" });
+      }
+      if(checkAlphaNum(password)){
+        return res.json({ error: "password requires a mix of letters and numbers" });
+      }
+
       const newUserObj = {
         id: uuid,
         displayName: displayName,
@@ -28,28 +46,23 @@ export const registerHandler = (req: Request, res: Response) => {
         password: password
       };
 
-      // password validation
-      if (password.length < 5){
-        res.json({ error: "password requires minimum of 5 characters" });
-        return;
-      }
-      if(checkAlphaNum(password)){
-        res.json({ error: "password requires a mix of letters and numbers" });
-        return;
-      }
-
       userDatabase.push(newUserObj);
-      for (const user of userDatabase) {
-        console.log(user);
-      }
+      // ~ check if userDataBase is updated ~
+  
+      // for (const user of userDatabase) {
+      //   console.log(user);
+      // }
+      
       res.json({ 
         message: `user registered ${uuid}`,
         displayName: displayName,
         id: uuid, });
     }
-    res.json({ error: "user already exists" });
+
+    return res.json({ error: "user already exists" });
   } catch(err) {
-    // do nothing 
+    console.error(err);
+    return res.status(500).json({ error: "Internal server error" });
   }
 }
 

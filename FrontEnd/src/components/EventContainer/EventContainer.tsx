@@ -47,6 +47,7 @@ const EventContainer = () => {
         try {
             await addParticipantToEvent(eventInfo.id, userID); // Replace 'userID' with the actual user ID
             console.log('Participant added to the event');
+            console.log()
           } catch (error) {
             console.error('Error adding participant to the event:', error);
           }
