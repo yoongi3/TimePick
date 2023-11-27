@@ -118,7 +118,6 @@ const NewEventContainer = () => {
         if (startDate > endDate) {
             errors.push('End date must be after start date');
         }
-        console.log(errors)
         return errors;
     }
 

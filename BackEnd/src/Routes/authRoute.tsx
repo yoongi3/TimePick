@@ -66,22 +66,22 @@ export const registerHandler = (req: Request, res: Response) => {
   }
 }
 
-export const usersListHandler = (req: Request, res: Response) => {
-  const username = req.query.id
-  if (username){
-      const users = userDatabase.filter(user => {
-          console.log(user)
-          if(user.username == username){
-              return true
-          }
-          return false;
-      })
-      console.log(users)
-      return res.status(200).json(users);
-  }else {
-      return res.status(200).json(userDatabase);
-  }
-}
+export const getUserNameByIdHandler = (req: Request, res: Response) => {
+  const id = req.query.id
+    if (id){
+        const users = userDatabase.filter(user => {
+            console.log(user)
+            if(user.id == id){
+                return true
+            }
+            return false;
+        })
+        console.log(users)
+        return res.status(200).json(users);
+    }else {
+        return res.status(200).json(userDatabase);
+    }
+};
 
 
 export const loginHandler = (req: any, res: any) => {

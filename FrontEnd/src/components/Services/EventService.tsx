@@ -8,14 +8,14 @@ export const addParticipantToEvent = async (eventId, participantId) => {
             body: JSON.stringify({ participantId }),
         });
 
+        const responseData = await response.json();
+
         if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Server Error:', errorData);
+            console.error('Server Error:', responseData);
             throw new Error('Failed to add participant to the event');
           }
-      
-          const data = await response.json();
-          return data;
+        
+        return responseData
         } catch (error) {
           console.error('Error adding participant to the event:', error);
           throw error;
