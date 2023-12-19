@@ -1,5 +1,5 @@
 import Header from "../components/Header"
-import NavBar from "../components/NavBar"
+import NavBar from "../components/NavBar/NavBar"
 import styled from "styled-components"
 import NewEventContainer from "../components/NewEventContainer/NewEventContainer"
 

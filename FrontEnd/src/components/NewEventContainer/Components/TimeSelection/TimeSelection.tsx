@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import styled from "styled-components"
-import Dropdown from "../../Generic/Dropdown/Dropdown";
+import Dropdown from "../../../Generic/Dropdown/Dropdown";
 
 const MainContainer = styled.div`
 background-color : #3D5A80;

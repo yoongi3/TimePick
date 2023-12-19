@@ -1,6 +1,6 @@
 import { useState, ChangeEvent } from "react";
 import styled from "styled-components";
-import InputBox from "../../Generic/InputBox/InputBox";
+import InputBox from "../../../Generic/InputBox/InputBox";
 
 const Container = styled.div`
 background-color : #3D5A80;

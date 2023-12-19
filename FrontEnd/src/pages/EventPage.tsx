@@ -1,6 +1,6 @@
 import Header from "../components/Header"
 import styled from "styled-components"
-import NavBar from "../components/NavBar";
+import NavBar from "../components/NavBar/NavBar";
 import EventContainer from "../components/EventContainer/EventContainer";
 
 const Container = styled.div`   
@@ -17,7 +17,6 @@ function EventPage() {
                 <NavBar/>
             </Container>
         </>
-        
     )
 }
 

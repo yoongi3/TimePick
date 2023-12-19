@@ -1,6 +1,10 @@
 import styled from "styled-components"
 import GridContainer from "./GridContainer"
 import { useEffect, useState } from "react"
+import { useParams } from "react-router-dom"
+import { useUser } from "../Providers/UserProvider"
+import { addParticipantToEvent } from "../Services/EventService"
+import { Button } from "../Generic/Button/Button"
 
 const Container = styled.div`
 flex-grow : 1;
@@ -10,61 +14,99 @@ align-items : center;
 `
 
 type EventInfo = {
+    id: string;
     name: string;
     timeStart: string;
     timeEnd: string;
     dateStart: string;
     dateEnd: string;
+    participants: string[];
   };
 
 const EventContainer = () => {
+    const { isLoggedIn, id: userID } = useUser();
+    const {id} = useParams();
+
     const [eventInfo, setEventInfo] = useState<EventInfo>({
+        id: '',
         name: '',
         timeStart: '',
         timeEnd: '',
         dateStart: '',
         dateEnd: '',
+        participants: []
     });
 
+    const [participants, setParticipants] = useState<string[]>([]);
+
     useEffect(() => {
-        const currentURL = window.location.href;
-        const searchParams = new URLSearchParams(currentURL);
-
-        const paramNames = ['name', 'timeStart', 'timeEnd', 'dateStart', 'dateEnd']
-
-        const updatedEventInfo: EventInfo = { ...eventInfo };
-
-        paramNames.forEach(paramName => {
-            const paramValue = searchParams.get(paramName) ?? '';
-            
-            if (paramName) {
-                updatedEventInfo[paramName as keyof EventInfo] = paramValue;
-            } else {
-                console.log(paramName + ' not found in URL');
-            }
+        fetch(`http://localhost:8080/events?id=${id}`)
+        .then(response => response.json())
+        .then(data => {
+            setEventInfo(data[0])
+            participantListHandler(data[0].participants)
         })
-        setEventInfo(updatedEventInfo);
-    }, []);
-    
-    if (!eventInfo.name) {
-        return <p>Loading...</p>;
+    }, [id]);
+
+    const handleAddParticipant = async () => {
+        try {
+            await addParticipantToEvent(eventInfo.id, userID); 
+            
+            const updatedEventResponse = await fetch(
+                `http://localhost:8080/events?id=${id}`
+            );
+            const updatedEventData = await updatedEventResponse.json();
+            
+            setEventInfo(updatedEventData[0]);
+
+            participantListHandler(updatedEventData[0].participants);
+          } catch (error) {
+            console.error('Error adding participant to the event:', error);
+          }
     }
 
-    const millSecInHour = 1000 * 60 * 60 * 24;
-    // +1 since colLength starts 0
-    const colLength = Math.floor((new Date(eventInfo.dateEnd).getTime() - new Date(eventInfo.dateStart).getTime()) / millSecInHour + 1);
-    // *2 to split hours into 30min intervals
-    const rowLength = (parseInt(eventInfo.timeEnd, 10) - parseInt(eventInfo.timeStart, 10)) * 2; 
+    const participantListHandler = async (participantIds: string[]) => {
+        const updatedParticipantDisplayNames = await Promise.all(
+            participantIds.map(async (participantId) => {
+              const userNameResponse = await fetch(
+                `http://localhost:8080/users?id=${participantId}`
+              );
+              const userNameData = await userNameResponse.json();
+              return userNameData[0]?.displayName || 'Unknown User';
+            })
+          );
+          setParticipants(updatedParticipantDisplayNames);
+    }
+
+    const millSecInDay = 1000 * 60 * 60 * 24;
+    const colLength = Math.floor((new Date(eventInfo.dateEnd).getTime() - new Date(eventInfo.dateStart).getTime()) / millSecInDay + 1);
+
+    const intervals = 60/30; // 30 min intervals
+    const rowLength = (parseInt(eventInfo.timeEnd, 10) - parseInt(eventInfo.timeStart, 10)) * intervals; 
 
     return(
         <Container>
-            <p>{eventInfo.name}</p>
-            <GridContainer 
-            numCols={colLength} numRows={rowLength}
-            startDate={eventInfo.dateStart} endDate={eventInfo.dateEnd} 
-            startTime={eventInfo.timeStart} endTime={eventInfo.timeEnd}
-            />
-            <button>submit</button>
+            {!isLoggedIn && <div>Login to edit availabilities</div>}
+
+            {isLoggedIn &&
+                <>
+                    <p>{eventInfo.name}</p>
+                    <GridContainer 
+                    numCols={colLength} numRows={rowLength}
+                    startDate={eventInfo.dateStart} endDate={eventInfo.dateEnd} 
+                    startTime={eventInfo.timeStart} endTime={eventInfo.timeEnd}
+                    />
+                    <Button onClick={handleAddParticipant}>submit and save</Button>
+                    <div>
+            <p>List of Participants:</p>
+            <ul>
+              {participants.map((participant, index) => (
+                <li key={index}>{participant}</li>
+              ))}
+            </ul>
+          </div>
+                </>
+            }
         </Container>
     )
 }
