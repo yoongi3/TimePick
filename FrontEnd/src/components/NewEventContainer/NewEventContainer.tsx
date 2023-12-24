@@ -39,12 +39,12 @@ const ButtonContainer = styled.div`
 `
 
 const NewEventContainer = () => {
-    const { isLoggedIn, id } = useUser();
+    const { activeUser } = useUser();
     const navigate = useNavigate();
 
     useEffect(() => {
-        formData.participants = id;
-    },[id])
+        formData.participants = activeUser;
+    },[activeUser])
     
 
     const [showPopup, setShowPopup] = useState(false);
@@ -65,7 +65,7 @@ const NewEventContainer = () => {
 
     const handleClick = (event) => {
 
-        if (!isLoggedIn) {
+        if (!activeUser) {
             showErorMessage('You need to be logged in to create an event');
             return;
         }
@@ -76,7 +76,7 @@ const NewEventContainer = () => {
 
             showErorMessage(errorMessage)
         }else {
-            handleInput("participants", id);
+            handleInput("participants", activeUser);
 
             const url = 'http://localhost:8080/events/create';
 

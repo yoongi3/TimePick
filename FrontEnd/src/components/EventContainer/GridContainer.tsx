@@ -26,9 +26,11 @@ type Props = {
     endDate: string;
     startTime: string
     endTime: string;
+    users: string[];
+    activeUser: string;
 }
 
-const GridContainer = ({ numRows, numCols , startDate, endDate, startTime, endTime }: Props) => {
+const GridContainer = ({ numRows, numCols , startDate, endDate, startTime, endTime, users, activeUser }: Props) => {
     const matrixContext = useMatrix()
     const {matrix, createNewMatrix} = matrixContext;
     

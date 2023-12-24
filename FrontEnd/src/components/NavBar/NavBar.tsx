@@ -5,7 +5,7 @@ import { ActionButtons, Container, UserSection, WelcomeMessage } from "./NavBarS
 import { AuthButton } from "../Generic/Button/Button";
 
 function NavBar() {
-    const { isLoggedIn, logout, displayName } = useUser();
+    const { activeUser, logout, displayName } = useUser();
     const [activeAction, setActiveAction] = useState(null);
 
     const handleAction = (action) => {
@@ -25,12 +25,12 @@ function NavBar() {
         <Container>
             <div>
                 <WelcomeMessage>
-                    {isLoggedIn 
+                    {activeUser 
                     ? `Welcome, ${displayName}!` 
                     : 'Log in to see and edit events.'}
                 </WelcomeMessage>
                 <ActionButtons>
-                    {!isLoggedIn && (
+                    {!activeUser && (
                         <>
                             <AuthButton onClick={()=>handleAction("signin")}>Login</AuthButton>
                             {activeAction === "signin" && <LoginBox onClose={handleCloseAuthBox}/>}
@@ -40,7 +40,7 @@ function NavBar() {
                     )}
                 </ActionButtons>
                 <UserSection>
-                    {isLoggedIn &&
+                    {activeUser &&
                     <>
                         <AuthButton onClick={handleLogout}>Logout</AuthButton>
                         <div>User events</div>
