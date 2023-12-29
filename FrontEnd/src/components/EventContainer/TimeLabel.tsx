@@ -34,8 +34,8 @@ const TimeLabel = ({startTime, endTime}: Props) => {
 
     return(
         <Container>
-            <LabelCell></LabelCell>
-            <LabelCell></LabelCell>
+            <LabelCell/>
+            <LabelCell/>
             {timeRange.map((time, index) => (
                 <div key={index}>
                     <LabelCell>{time}</LabelCell>

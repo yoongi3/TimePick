@@ -6,7 +6,7 @@ const Container = styled.div`
 const LabelCell = styled.div`
     width: 40px;
     height: 25px;
-    margin: 0 6px 6px;
+    margin: 0 1px 6px;
     display: flex;
     justify-content: center;
     align-items: center;
