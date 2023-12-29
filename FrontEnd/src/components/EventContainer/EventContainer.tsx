@@ -1,10 +1,13 @@
 import styled from "styled-components"
-import GridContainer from "./GridContainer"
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { useUser } from "../Providers/UserProvider"
 import { addParticipantToEvent } from "../Services/EventService"
 import { Button } from "../Generic/Button/Button"
+import Grid from "./Grid"
+import { useGrid } from "../Providers/GridProvider"
+import DateLabel from "./DateLabel"
+import TimeLabel from "./TimeLabel"
 
 const Container = styled.div`
 flex-grow : 1;
@@ -13,18 +16,32 @@ flex-direction : column;
 align-items : center;
 `
 
+const ScrollBox = styled.div`
+  width: 500px; 
+  height: 500px; 
+  overflow: auto;
+  border: 2px solid #3498db;
+  border-radius: 8px; 
+  background-color: #f0f0f0;
+`
+const GridContainer = styled.div`
+  display: flex;
+  padding: 15px; 
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+`
+
 type EventInfo = {
-    id: string;
-    name: string;
-    timeStart: string;
-    timeEnd: string;
-    dateStart: string;
-    dateEnd: string;
-    participants: string[];
-  };
+  id: string;
+  name: string;
+  timeStart: string;
+  timeEnd: string;
+  dateStart: string;
+  dateEnd: string;
+  participants: string[];
+};
 
 const EventContainer = () => {
-    const { isLoggedIn, id: userID } = useUser();
+    const { activeUser, displayName } = useUser();
     const {id} = useParams();
 
     const [eventInfo, setEventInfo] = useState<EventInfo>({
@@ -38,45 +55,141 @@ const EventContainer = () => {
     });
 
     const [participants, setParticipants] = useState<string[]>([]);
+    const [initialCells, setInitialCells] = useState<[number, number][]>()
+    const {grid, updateCell, createNewGrid} = useGrid();
 
     useEffect(() => {
-        fetch(`http://localhost:8080/events?id=${id}`)
-        .then(response => response.json())
-        .then(data => {
-            setEventInfo(data[0])
-            participantListHandler(data[0].participants)
-        })
+      const fetchEventInfo = async () => {
+        try {
+          const response = await fetch(`http://localhost:8080/events?id=${id}`);
+          const data = await response.json();
+          setEventInfo(data[0]);
+          participantListHandler(data[0].participants);
+        } catch (error) {
+          console.error("Error fetching event data:", error);
+        }
+      };
+  
+      fetchEventInfo();
     }, [id]);
 
-    const handleAddParticipant = async () => {
+    useEffect(() => {
+      const fetchUserGrid = async () => {
         try {
-            await addParticipantToEvent(eventInfo.id, userID); 
-            
-            const updatedEventResponse = await fetch(
-                `http://localhost:8080/events?id=${id}`
-            );
-            const updatedEventData = await updatedEventResponse.json();
-            
-            setEventInfo(updatedEventData[0]);
+          const response = await fetch(`http://localhost:8080/usergrid/${id}/${activeUser}`);
+          
+          const data = await response.json();
+          console.log('retrieved data:',data)
+          const userInitialCells = data.map(([row, col]) => [row, col]);
+          setInitialCells(userInitialCells);
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      };
+      if(activeUser){
+        fetchUserGrid();
+      }
+    }, [activeUser])
 
-            participantListHandler(updatedEventData[0].participants);
-          } catch (error) {
-            console.error('Error adding participant to the event:', error);
+    useEffect(() => {
+      InitGrid();
+    },[initialCells])
+
+    const InitGrid = () => {
+      console.log(initialCells)
+      if (initialCells) {
+        console.log(grid)
+        console.log('cells to be changed: ',initialCells)
+        initialCells.forEach(([row, col]) => {
+          console.log(row,col)
+          updateCell(row, col, 1);
+        });
+      }
+    };
+  
+
+    const handleSubmit = async () => {
+      try {
+        await handleAddParticipant();
+        const data = convertDataToArray(grid)
+        await pushUserGrid(data);
+      } catch (error) {
+        console.error("Error submitting and saving:", error);
+      }
+    };
+
+    const convertDataToArray = (grid) => {
+      const result = [];
+  
+      for (let row = 0; row < grid.length; row++) {
+          for (let col = 0; col < grid[row].length; col++) {
+              if (grid[row][col] === 1) {
+                  result.push([row, col]);
+              }
           }
+      }
+  
+      return result;
+  };
+
+    const handleAddParticipant = async () => {
+      try {
+        if (eventInfo.participants.includes(activeUser)) {
+          console.log('User is already a participant.');
+          return;
+        }
+
+        await addParticipantToEvent(eventInfo.id, activeUser);
+  
+        const updatedEventResponse = await fetch(
+          `http://localhost:8080/events?id=${id}`
+        );
+        const updatedEventData = await updatedEventResponse.json();
+  
+        setEventInfo(updatedEventData[0]);
+        participantListHandler(updatedEventData[0].participants);
+      } catch (error) {
+        console.error("Error adding participant to the event:", error);
+      }
+    };
+
+    const pushUserGrid = async (userGridState: [number, number][]) => {
+      try {
+        const response = await fetch(`http://localhost:8080/grid/${id}/${activeUser}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ selectedCells: userGridState }),
+        });
+    
+        if (response.ok) {
+          console.log('User grid successfully updated on the server.');
+        } else {
+          console.error('Failed to update user grid on the server.');
+        }
+      } catch (error) {
+        console.error('Error updating user grid:', error);
+      }
     }
 
     const participantListHandler = async (participantIds: string[]) => {
-        const updatedParticipantDisplayNames = await Promise.all(
-            participantIds.map(async (participantId) => {
-              const userNameResponse = await fetch(
-                `http://localhost:8080/users?id=${participantId}`
-              );
-              const userNameData = await userNameResponse.json();
-              return userNameData[0]?.displayName || 'Unknown User';
-            })
-          );
-          setParticipants(updatedParticipantDisplayNames);
-    }
+      const updatedParticipantDisplayNames = await Promise.all(
+        participantIds.map(async (participantId) => {
+          try {
+            const userNameResponse = await fetch(
+              `http://localhost:8080/users?id=${participantId}`
+            );
+            const userNameData = await userNameResponse.json();
+            return userNameData[0]?.displayName || "Unknown User";
+          } catch (error) {
+            console.error("Error fetching user data:", error);
+            return "Unknown User";
+          }
+        })
+      );
+      setParticipants(updatedParticipantDisplayNames);
+    };
 
     const millSecInDay = 1000 * 60 * 60 * 24;
     const colLength = Math.floor((new Date(eventInfo.dateEnd).getTime() - new Date(eventInfo.dateStart).getTime()) / millSecInDay + 1);
@@ -86,17 +199,22 @@ const EventContainer = () => {
 
     return(
         <Container>
-            {!isLoggedIn && <div>Login to edit availabilities</div>}
+            {!activeUser && <div>Login to edit availabilities</div>}
 
-            {isLoggedIn &&
+            {activeUser &&
                 <>
                     <p>{eventInfo.name}</p>
-                    <GridContainer 
-                    numCols={colLength} numRows={rowLength}
-                    startDate={eventInfo.dateStart} endDate={eventInfo.dateEnd} 
-                    startTime={eventInfo.timeStart} endTime={eventInfo.timeEnd}
-                    />
-                    <Button onClick={handleAddParticipant}>submit and save</Button>
+                    <ScrollBox>
+                      <GridContainer>
+                        <TimeLabel startTime={eventInfo.timeStart} endTime={eventInfo.timeEnd}/>
+                        <div>
+                          <DateLabel startDate={eventInfo.dateStart} endDate={eventInfo.dateEnd}/>
+                          <Grid rows={rowLength} cols={colLength}/>
+                        </div>
+                      </GridContainer>
+                    </ScrollBox>
+                    
+                    <Button onClick={handleSubmit}>Submit and Save</Button>
                     <div>
             <p>List of Participants:</p>
             <ul>

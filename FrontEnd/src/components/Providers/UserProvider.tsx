@@ -1,35 +1,30 @@
 import { createContext, useContext, useState } from "react";
-import { addParticipantToEvent } from "../Services/EventService";
 
 type UserContextType = {
-    isLoggedIn: boolean;
-    login: (newName?: string) => void;
+    login: (newName?: string, newID ?:string) => void;
     logout: () => void;
     displayName: string;
-    id: string;
+    activeUser: string;
 }
 
 const UserContext = createContext < UserContextType | undefined > (undefined);
 
 export const UserProvider = ({ children }) => {
-    const [ isLoggedIn, setIsLoggedIn ] = useState(false);
+    const [ activeUser, setActiveUser ] = useState("")
     const [ displayName, setName ] = useState("");
-    const [ id, setID ] = useState("");
 
     const login = async (newName: string = "", newID: string = "") =>{
-        setIsLoggedIn(true);
+        setActiveUser(newID)
         setName(newName);
-        setID(newID);
     }
 
     const logout = () =>{
-        setIsLoggedIn(false);
+        setActiveUser(undefined)
         setName("");
-        setID("");
     }
 
     return(
-        <UserContext.Provider value={{ isLoggedIn, login, logout, displayName, id }}>
+        <UserContext.Provider value={{ login, logout, displayName, activeUser }}>
             {children}
         </UserContext.Provider>
     )

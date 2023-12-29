@@ -39,13 +39,8 @@ const ButtonContainer = styled.div`
 `
 
 const NewEventContainer = () => {
-    const { isLoggedIn, id } = useUser();
+    const { activeUser } = useUser();
     const navigate = useNavigate();
-
-    useEffect(() => {
-        formData.participants = id;
-    },[id])
-    
 
     const [showPopup, setShowPopup] = useState(false);
     const [popupMessage, setPopupMessage] = useState('');
@@ -58,47 +53,65 @@ const NewEventContainer = () => {
         dateEnd: '',
         participants: '',
     });
+
+    useEffect(() => {
+        formData.participants = activeUser;
+    },[activeUser])
     
     const handleInput = (inputType: keyof typeof formData, inputValue: string | number) => {
         setFormData({...formData, [inputType]: inputValue});
     }
 
-    const handleClick = (event) => {
+    const handleClick = async () => {
+        try {
+            if (!activeUser) {
+                showErorMessage('You need to be logged in to create an event');
+                return;
+            }
 
-        if (!isLoggedIn) {
-            showErorMessage('You need to be logged in to create an event');
-            return;
+            const validationErrors = validateInput();
+
+            if (validationErrors.length > 0) {
+                const errorMessage = validationErrors.join(', ');
+                showErorMessage(errorMessage);
+            } else {
+                const eventUrl = 'http://localhost:8080/events/create';
+                const gridUrl = 'http://localhost:8080/grid';
+
+                const eventResponse = await fetch(eventUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
+                });
+
+                if (!eventResponse.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const eventData = await eventResponse.json();
+                const id = eventData.id;
+
+                await fetch(`${gridUrl}/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        eventId: id,
+                        userId: activeUser,
+                        selectedCells: [],
+                    }),
+                });
+
+                navigate(`/event/${id}`);
+            }
+        } catch (error) {
+            console.error('Error creating event:', error);
         }
-        const validationErrors = validateInput();
-        
-        if(validationErrors.length > 0){
-            const errorMessage = (validationErrors.join(', '));
+    };
 
-            showErorMessage(errorMessage)
-        }else {
-            handleInput("participants", id);
-
-            const url = 'http://localhost:8080/events/create';
-
-            fetch (url, {
-                method: 'Post',
-                headers: {
-                    'Content-type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            })
-            .then((response) => {
-                if(!response.ok){
-                    throw new Error ('Network response was not ok')
-                } 
-                return response.json()
-            })
-            .then((data) => {
-                const id = data.id;
-                navigate(`/event/${id}`)
-            })
-        }
-    }
 
     const validateInput = () => {
         const errors = [];
@@ -118,6 +131,7 @@ const NewEventContainer = () => {
         if (startDate > endDate) {
             errors.push('End date must be after start date');
         }
+        
         return errors;
     }
 

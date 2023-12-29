@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import { eventCreateHandler, eventsListHandler, participantHandler } from './Routes/eventRoute';
 import { loginHandler, registerHandler, getUserNameByIdHandler } from './Routes/authRoute';
+import { createGridHandler, gridListhandler, pushUserGridHandler, getUserGridHandler } from './Routes/gridRoute';
 
 
 export const app = express()
@@ -19,3 +20,9 @@ app.post("/events/addParticipant/:eventId", participantHandler)
 app.get("/users", getUserNameByIdHandler)
 app.post("/register", registerHandler)
 app.post("/login", loginHandler)
+
+// Grid routes
+app.post("/grid/:eventId", createGridHandler)
+app.get("/grid", gridListhandler)
+app.patch("/grid/:eventId/:userId", pushUserGridHandler);
+app.get("/usergrid/:eventId/:userId", getUserGridHandler);
