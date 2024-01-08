@@ -24,18 +24,25 @@ export const createGridHandler = (req: Request, res: Response) => {
     return res.status(201).json(eventGrid);
 };
 
-export const gridListhandler = (req: Request, res: Response) => {
-    const eventId = req.query.eventId as string;
 
-    if (eventId) {
-        const eventGrid = GridsDatabase.find((grid) => grid.eventId === eventId);
-        return eventGrid
-            ? res.status(200).json(eventGrid)
-            : res.status(404).json({ error: 'Event grid not found' });
+function getAllSelectedCells(eventGrid: EventGrid): GridCell[] {
+    return eventGrid.users.flatMap((userGrid) => userGrid.selectedCells);
+}
+
+export const getEventGridHandler = (req: Request, res: Response) => {
+    const eventId = req.params.eventId;
+  
+    const eventGrid = GridsDatabase.find((grid) => grid.eventId === eventId);
+  
+    if (eventGrid) {
+      const selectedGridsArray: GridCell[] = getAllSelectedCells(eventGrid);
+  
+      console.log(selectedGridsArray);
+      return res.status(200).json(selectedGridsArray);
     } else {
-        return res.status(200).json(GridsDatabase);
+      return res.status(404).json({ error: 'Event grid not found' });
     }
-};
+  };
 
 export const pushUserGridHandler = (req: Request, res: Response) => {
     const eventId = req.params.eventId;

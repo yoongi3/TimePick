@@ -76,7 +76,7 @@ const NewEventContainer = () => {
                 showErorMessage(errorMessage);
             } else {
                 const eventUrl = 'http://localhost:8080/events/create';
-                const gridUrl = 'http://localhost:8080/grid';
+                const gridUrl = 'http://localhost:8080/grid/create';
 
                 const eventResponse = await fetch(eventUrl, {
                     method: 'POST',

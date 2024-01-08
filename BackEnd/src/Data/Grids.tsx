@@ -11,7 +11,6 @@ export type UserGrid = {
 export type EventGrid = {
     eventId: string;
     users: UserGrid[];
-
 }
 
 export var GridsDatabase: EventGrid[] = [];
