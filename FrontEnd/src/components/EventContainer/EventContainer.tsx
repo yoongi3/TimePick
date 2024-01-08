@@ -218,7 +218,7 @@ const EventContainer = () => {
                     <p>{eventInfo.name}</p>
                     <Grids>
                       <div>
-                        <div>User Grid</div>
+                        <div>{displayName}'s Availability</div>
                         <ScrollBox>
                           <GridContainer>
                             <TimeLabel startTime={eventInfo.timeStart} endTime={eventInfo.timeEnd}/>
@@ -232,7 +232,7 @@ const EventContainer = () => {
                         <Button onClick={handleSubmit}>Update Availability</Button>
                       </div>
                       <div>
-                        <div>Group Grid</div>
+                        <div>Groups Availability</div>
                         <ScrollBox>
                           <GridContainer>
                             <TimeLabel startTime={eventInfo.timeStart} endTime={eventInfo.timeEnd}/>
