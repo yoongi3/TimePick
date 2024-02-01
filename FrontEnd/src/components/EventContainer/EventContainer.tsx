@@ -82,7 +82,6 @@ const EventContainer = () => {
       try {
         const eventGridResponse = await fetch(`http://localhost:8080/grid/getData/${id}`);
         const eventGridData = await eventGridResponse.json();
-        console.log("Updated Event Grid:", eventGridData);
         setGroupCells(eventGridData)
       } catch (error) {
         console.error("Error fetching updated event grid:", error);
@@ -147,7 +146,6 @@ const EventContainer = () => {
     const handleAddParticipant = async () => {
       try {
         if (eventInfo.participants.includes(activeUser)) {
-          console.log('User is already a participant.');
           return;
         }
 
