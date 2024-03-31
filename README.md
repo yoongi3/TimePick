@@ -41,3 +41,7 @@ To set up the project, follow these simple steps:
 
 - Ensure that all necessary dependencies are properly installed before starting the development servers.
 - You may need to adjust configurations or environment variables depending on your specific setup.
+
+## Screenshot
+
+![](./Assets/Screenshot.png)
